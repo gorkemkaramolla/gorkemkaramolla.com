@@ -1,5 +1,9 @@
-<script>
-	import Button from '../components/button.svelte';
+<script lang="ts">
+	import Button from '../components/Button.svelte';
 </script>
 
-<Button on:click={() => alert('Clicked!')}>Click Me</Button>
+<p>
+	Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut deserunt in enim repellat velit hic
+	incidunt laudantium voluptatum, commodi vitae modi dolorem quaerat eius accusamus explicabo
+	numquam repudiandae dolore voluptas?
+</p>
