@@ -1,10 +1,12 @@
 import { json } from '@sveltejs/kit';
 import { Client } from '@notionhq/client';
+import type { RequestHandler } from './$types';
 
-// Initialize the Notion client
-const notion = new Client({ auth: process.env.NOTION_API_KEY });
+// Initialize the Notion client.
+// Note: We cast process.env.NOTION_API_KEY as a string to satisfy TypeScript.
+const notion = new Client({ auth: process.env.NOTION_API_KEY as string });
 
-export async function POST({ request }) {
+export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const payload = await request.json();
 
@@ -22,24 +24,25 @@ export async function POST({ request }) {
 
 		// Fetch the full page properties from Notion
 		const response = await notion.pages.retrieve({ page_id: pageId });
-		const properties = response.properties;
 
-		// Helper function for text fields
-		const extractText = (prop) => prop?.rich_text?.map((t) => t.plain_text).join('') || '';
+		// 🛠️ TYPE FIX: We cast properties to Record<string, any> to bypass Notion's
+		// overly strict discriminated union types. This allows us to map the data cleanly.
+		const properties = (response as any).properties as Record<string, any>;
+
+		// 🛠️ TYPE FIX: Add 'any' to our helper parameters
+		const extractText = (prop: any) =>
+			prop?.rich_text?.map((t: any) => t.plain_text).join('') || '';
 
 		// --------------------------------------------------
 		// 3. COMPILE ALL DATA (Even if empty)
 		// --------------------------------------------------
-		// Looking closely at your screenshot, "Featured Image" has a link icon (🔗),
-		// meaning it is a URL property, not a file upload property.
-
 		const notionData = {
-			id: pageId,
+			id: pageId as string,
 
-			// The default title column (usually "Name" or "Title")
+			// The default title column
 			title:
-				properties['Name']?.title?.map((t) => t.plain_text).join('') ||
-				properties['Title']?.title?.map((t) => t.plain_text).join('') ||
+				properties['Name']?.title?.map((t: any) => t.plain_text).join('') ||
+				properties['Title']?.title?.map((t: any) => t.plain_text).join('') ||
 				'',
 
 			// Text Properties
@@ -66,10 +69,10 @@ export async function POST({ request }) {
 			status: properties['Status']?.status?.name || null,
 
 			// Multi-select Property (🏷️)
-			tags: properties['Tags']?.multi_select?.map((tag) => tag.name) || []
+			tags: properties['Tags']?.multi_select?.map((tag: any) => tag.name) || []
 		};
 
-		// Log it to your terminal so you can see exactly what Notion sent
+		// Log it to your terminal
 		console.log('\n📦 Extracted Notion Data:');
 		console.dir(notionData, { depth: null });
 
@@ -78,7 +81,6 @@ export async function POST({ request }) {
 		// --------------------------------------------------
 		// Example: await myDatabase.articles.upsert(notionData);
 
-		// Return the compiled data in the response (useful for testing)
 		return json({
 			success: true,
 			data: notionData
@@ -87,4 +89,4 @@ export async function POST({ request }) {
 		console.error('Webhook processing error:', error);
 		return json({ error: 'Failed to process webhook' }, { status: 500 });
 	}
-}
+};
