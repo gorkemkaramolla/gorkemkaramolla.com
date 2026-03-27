@@ -10,6 +10,9 @@ export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const payload = await request.json();
 
+		// LOG RAW PAYLOAD for debugging
+		console.log('\n📨 RAW NOTION PAYLOAD:', JSON.stringify(payload, null, 2), '\n');
+
 		// 1. THE VERIFICATION CATCHER
 		if (payload.verification_token) {
 			console.log('\n🔥 NOTION VERIFICATION TOKEN:', payload.verification_token, '\n');
@@ -22,8 +25,27 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json({ success: true, message: 'No page ID found' });
 		}
 
-		// Fetch the full page properties from Notion
-		const response = await notion.pages.retrieve({ page_id: pageId });
+		// Fetch all blocks with cursor-based pagination
+		const fetchAllBlocks = async (blockId: string) => {
+			const blocks: any[] = [];
+			let cursor: string | undefined = undefined;
+			do {
+				const res = await notion.blocks.children.list({
+					block_id: blockId,
+					page_size: 100,
+					...(cursor ? { start_cursor: cursor } : {})
+				});
+				blocks.push(...res.results);
+				cursor = res.has_more ? (res.next_cursor ?? undefined) : undefined;
+			} while (cursor);
+			return blocks;
+		};
+
+		// Fetch the full page properties and all blocks from Notion
+		const [response, allBlocks] = await Promise.all([
+			notion.pages.retrieve({ page_id: pageId }),
+			fetchAllBlocks(pageId)
+		]);
 
 		// 🛠️ TYPE FIX: We cast properties to Record<string, any> to bypass Notion's
 		// overly strict discriminated union types. This allows us to map the data cleanly.
@@ -69,7 +91,10 @@ export const POST: RequestHandler = async ({ request }) => {
 			status: properties['Status']?.status?.name || null,
 
 			// Multi-select Property (🏷️)
-			tags: properties['Tags']?.multi_select?.map((tag: any) => tag.name) || []
+			tags: properties['Tags']?.multi_select?.map((tag: any) => tag.name) || [],
+
+			// Page content blocks
+			blocks: allBlocks
 		};
 
 		// Log it to your terminal
