@@ -1,12 +1,30 @@
 import { json } from '@sveltejs/kit';
 import { Client } from '@notionhq/client';
-import { NotionToMarkdown } from 'notion-to-md'; // 👈 1. Import the converter
+import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import { NotionToMarkdown } from 'notion-to-md';
 import type { RequestHandler, RequestEvent } from './$types';
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY as string });
 
-// 👈 2. Initialize the converter
 const n2m = new NotionToMarkdown({ notionClient: notion });
+
+type Properties = PageObjectResponse['properties'];
+
+function getTitle(props: Properties, name: string): string {
+	const prop = props[name];
+	if (prop?.type === 'title') {
+		return prop.title.map((t) => t.plain_text).join('');
+	}
+	return '';
+}
+
+function getRichText(props: Properties, name: string): string {
+	const prop = props[name];
+	if (prop?.type === 'rich_text') {
+		return prop.rich_text.map((t) => t.plain_text).join('');
+	}
+	return '';
+}
 
 export const POST: RequestHandler = async ({ request }: RequestEvent) => {
 	try {
@@ -21,42 +39,60 @@ export const POST: RequestHandler = async ({ request }: RequestEvent) => {
 			return json({ success: true, message: 'No page ID found' });
 		}
 
-		// 👈 3. Fetch properties and Convert to Markdown simultaneously
-		// We replace fetchAllBlocks with n2m.pageToMarkdown
 		const [response, mdblocks] = await Promise.all([
 			notion.pages.retrieve({ page_id: pageId }),
 			n2m.pageToMarkdown(pageId)
 		]);
 
 		const mdString = n2m.toMarkdownString(mdblocks);
-		const markdownContent = mdString.parent; // This is your article body!
+		const markdownContent = mdString.parent;
 
-		const properties = (response as any).properties as Record<string, any>;
-		const extractText = (prop: any) =>
-			prop?.rich_text?.map((t: any) => t.plain_text).join('') || '';
+		const page = response as PageObjectResponse;
+		const properties = page.properties;
+
+		const urlProp = (name: string): string | null => {
+			const prop = properties[name];
+			return prop?.type === 'url' ? prop.url : null;
+		};
+
+		const checkboxProp = (name: string): boolean => {
+			const prop = properties[name];
+			return prop?.type === 'checkbox' ? prop.checkbox : false;
+		};
+
+		const dateProp = (name: string): string | null => {
+			const prop = properties[name];
+			return prop?.type === 'date' ? (prop.date?.start ?? null) : null;
+		};
+
+		const statusProp = (name: string): string | null => {
+			const prop = properties[name];
+			return prop?.type === 'status' ? (prop.status?.name ?? null) : null;
+		};
+
+		const multiSelectNames = (name: string): string[] => {
+			const prop = properties[name];
+			return prop?.type === 'multi_select' ? prop.multi_select.map((tag) => tag.name) : [];
+		};
 
 		const notionData = {
 			id: pageId as string,
-			title:
-				properties['Name']?.title?.map((t: any) => t.plain_text).join('') ||
-				properties['Title']?.title?.map((t: any) => t.plain_text).join('') ||
-				'Untitled',
-			slug: extractText(properties['Slug']),
-			summary: extractText(properties['Summary']),
-			metaTitle: extractText(properties['Meta Title']),
-			metaDescription: extractText(properties['Meta Description']),
-			canonicalUrl: properties['Canonical URL']?.url || null,
-			featuredImage: properties['Featured Image']?.url || null,
-			noIndex: properties['No index']?.checkbox || false,
-			publishedDate: properties['Published date']?.date?.start || null,
+			title: getTitle(properties, 'Name') || getTitle(properties, 'Title') || 'Untitled',
+			slug: getRichText(properties, 'Slug'),
+			summary: getRichText(properties, 'Summary'),
+			metaTitle: getRichText(properties, 'Meta Title'),
+			metaDescription: getRichText(properties, 'Meta Description'),
+			canonicalUrl: urlProp('Canonical URL'),
+			featuredImage: urlProp('Featured Image'),
+			noIndex: checkboxProp('No index'),
+			publishedDate: dateProp('Published date'),
 			updatedDate:
-				properties['Updated date']?.date?.start ||
-				properties['Updated date']?.last_edited_time ||
-				null,
-			status: properties['Status']?.status?.name || null,
-			tags: properties['Tags']?.multi_select?.map((tag: any) => tag.name) || [],
-
-			// 👈 4. Store the clean Markdown string instead of raw blocks
+				dateProp('Updated date') ??
+				(properties['Updated date']?.type === 'last_edited_time'
+					? properties['Updated date'].last_edited_time
+					: null),
+			status: statusProp('Status'),
+			tags: multiSelectNames('Tags'),
 			content: markdownContent
 		};
 
@@ -64,9 +100,6 @@ export const POST: RequestHandler = async ({ request }: RequestEvent) => {
 		console.log(`📝 Content length: ${markdownContent.length} characters`);
 		console.log('📦 Notion data:', JSON.stringify(notionData, null, 2));
 
-		// --------------------------------------------------
-		// 4. SAVE TO YOUR DATABASE HERE
-		// --------------------------------------------------
 		// await db.articles.upsert(notionData);
 
 		return json({
