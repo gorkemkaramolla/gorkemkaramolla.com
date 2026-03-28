@@ -14,6 +14,19 @@ const notion = new Client({
 
 const n2m = new NotionToMarkdown({ notionClient: notion });
 
+n2m.setCustomTransformer('embed', async (block) => {
+	const url = (block as any).embed?.url ?? '';
+	if (!url) return false;
+	return `[youtube-embed](${url})`;
+});
+
+n2m.setCustomTransformer('video', async (block) => {
+	const video = (block as any).video;
+	const url = video?.external?.url ?? video?.file?.url ?? '';
+	if (!url) return false;
+	return `[youtube-embed](${url})`;
+});
+
 type Properties = PageObjectResponse['properties'];
 
 function getTitle(props: Properties, name: string): string | null {

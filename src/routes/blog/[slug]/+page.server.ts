@@ -22,26 +22,14 @@ function getYouTubeEmbedUrl(url: string): string | null {
 
 const renderer = new marked.Renderer();
 
-const originalParagraph = renderer.paragraph.bind(renderer);
-
 renderer.link = function (token: Tokens.Link) {
-	const embedUrl = getYouTubeEmbedUrl(token.href);
-	if (embedUrl) {
-		return `<div class="video-embed"><iframe src="${embedUrl}" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>\n`;
-	}
-	return `<a href="${token.href}">${token.text}</a>`;
-};
-
-renderer.paragraph = function (this: InstanceType<typeof marked.Renderer>, token: Tokens.Paragraph) {
-	const { tokens } = token;
-	if (tokens.length === 1 && tokens[0].type === 'text') {
-		const text = (tokens[0] as Tokens.Text).text.trim();
-		const embedUrl = getYouTubeEmbedUrl(text);
+	if (token.text === 'youtube-embed') {
+		const embedUrl = getYouTubeEmbedUrl(token.href);
 		if (embedUrl) {
 			return `<div class="video-embed"><iframe src="${embedUrl}" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>\n`;
 		}
 	}
-	return originalParagraph(token);
+	return `<a href="${token.href}" target="_blank" rel="noopener noreferrer">${token.text}</a>`;
 };
 
 export const load = async ({ params }) => {
