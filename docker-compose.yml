@@ -10,7 +10,10 @@ services:
       - '3000'
     networks:
       - web
+      - apps_default
 
 networks:
   web:
+    external: true
+  apps_default:
     external: true
