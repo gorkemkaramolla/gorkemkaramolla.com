@@ -152,6 +152,8 @@ export const POST: RequestHandler = async ({ request }) => {
 				set: articleData
 			})
 			.returning();
+		console.log(JSON.stringify(page.properties, null, 2));
+		console.log(JSON.stringify(savedPost, null, 2));
 
 		return json({
 			success: true,
