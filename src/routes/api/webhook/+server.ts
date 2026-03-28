@@ -62,6 +62,7 @@ export const POST: RequestHandler = async ({ request }: RequestEvent) => {
 
 		console.log(`\n✅ Successfully converted article: ${notionData.title}`);
 		console.log(`📝 Content length: ${markdownContent.length} characters`);
+		console.log('📦 Notion data:', JSON.stringify(notionData, null, 2));
 
 		// --------------------------------------------------
 		// 4. SAVE TO YOUR DATABASE HERE
