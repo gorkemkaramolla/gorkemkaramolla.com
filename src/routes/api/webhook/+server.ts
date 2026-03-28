@@ -48,63 +48,16 @@ export const POST: RequestHandler = async ({ request }: RequestEvent) => {
 		const markdownContent = mdString.parent;
 
 		const page = response as PageObjectResponse;
+
 		const properties = page.properties;
 
-		const urlProp = (name: string): string | null => {
-			const prop = properties[name];
-			return prop?.type === 'url' ? prop.url : null;
-		};
-
-		const checkboxProp = (name: string): boolean => {
-			const prop = properties[name];
-			return prop?.type === 'checkbox' ? prop.checkbox : false;
-		};
-
-		const dateProp = (name: string): string | null => {
-			const prop = properties[name];
-			return prop?.type === 'date' ? (prop.date?.start ?? null) : null;
-		};
-
-		const statusProp = (name: string): string | null => {
-			const prop = properties[name];
-			return prop?.type === 'status' ? (prop.status?.name ?? null) : null;
-		};
-
-		const multiSelectNames = (name: string): string[] => {
-			const prop = properties[name];
-			return prop?.type === 'multi_select' ? prop.multi_select.map((tag) => tag.name) : [];
-		};
-
-		const notionData = {
-			id: pageId as string,
-			title: getTitle(properties, 'Name') || getTitle(properties, 'Title') || 'Untitled',
-			slug: getRichText(properties, 'Slug'),
-			summary: getRichText(properties, 'Summary'),
-			metaTitle: getRichText(properties, 'Meta Title'),
-			metaDescription: getRichText(properties, 'Meta Description'),
-			canonicalUrl: urlProp('Canonical URL'),
-			featuredImage: urlProp('Featured Image'),
-			noIndex: checkboxProp('No index'),
-			publishedDate: dateProp('Published date'),
-			updatedDate:
-				dateProp('Updated date') ??
-				(properties['Updated date']?.type === 'last_edited_time'
-					? properties['Updated date'].last_edited_time
-					: null),
-			status: statusProp('Status'),
-			tags: multiSelectNames('Tags'),
-			content: markdownContent
-		};
-
-		console.log(`\n✅ Successfully converted article: ${notionData.title}`);
-		console.log(`📝 Content length: ${markdownContent.length} characters`);
-		console.log('📦 Notion data:', JSON.stringify(notionData, null, 2));
+		console.log('📦 Notion data:', JSON.stringify(page, null, 2));
 
 		// await db.articles.upsert(notionData);
 
 		return json({
 			success: true,
-			data: notionData
+			data: page
 		});
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'Unknown error';
