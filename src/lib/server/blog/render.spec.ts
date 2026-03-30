@@ -40,7 +40,7 @@ Closing notes.
 
 		const rendered = renderBlogMarkdown(markdown);
 
-		expect(rendered.htmlContent).toContain('https://www.youtube.com/embed/dQw4w9WgXcQ');
+		expect(rendered.htmlContent).toContain('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ');
 	});
 
 	it('keeps regular youtube links and external links as anchors', () => {

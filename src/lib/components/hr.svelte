@@ -1,1 +1,1 @@
-<hr class="my-6 border-t-4 border-emerald-300/90 dark:border-emerald-700/90" />
+<hr class="my-8 border-0 border-t border-border" />

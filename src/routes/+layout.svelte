@@ -20,11 +20,11 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<div class="flex min-h-screen flex-col pt-8">
-	<header class="container mx-auto flex items-center justify-end px-6">
+<div class="flex min-h-screen flex-col pt-8 print:pt-0">
+	<header class="print-hidden container mx-auto flex items-center justify-end px-6">
 		<ThemeToggle />
 	</header>
-	<div class="container mx-auto flex-1 p-6">
+	<div class="container mx-auto flex-1 p-6 print:p-0">
 		{@render children()}
 	</div>
 </div>
