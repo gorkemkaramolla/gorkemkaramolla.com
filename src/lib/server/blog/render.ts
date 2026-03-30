@@ -244,15 +244,11 @@ function createRenderer() {
 		if (token.tokens.length === 1) {
 			const onlyToken = token.tokens[0];
 
-			if (onlyToken.type === 'text') {
-				const embedUrl = getYouTubeEmbedUrl(onlyToken.text.trim());
-				if (embedUrl) {
-					return renderVideoEmbed(embedUrl);
-				}
-			}
-
 			if (onlyToken.type === 'link') {
-				const embedUrl = getYouTubeEmbedUrl(onlyToken.href);
+				const linkToken = onlyToken as Tokens.Link;
+				const embedUrl = isExplicitYouTubeEmbedLink(linkToken)
+					? getYouTubeEmbedUrl(linkToken.href)
+					: null;
 				if (embedUrl) {
 					return renderVideoEmbed(embedUrl);
 				}
