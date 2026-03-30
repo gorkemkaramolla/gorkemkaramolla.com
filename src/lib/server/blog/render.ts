@@ -3,6 +3,7 @@ import { marked, type Token, type Tokens } from 'marked';
 const WORDS_PER_MINUTE = 220;
 const EMBED_ALLOW =
 	'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+const EXPLICIT_YOUTUBE_EMBED_LABEL = 'youtube-embed';
 const SAFE_PROTOCOLS = new Set(['http:', 'https:', 'mailto:', 'tel:']);
 
 type HeadingTokenWithId = Tokens.Heading & { id?: string };
@@ -77,6 +78,10 @@ export function getYouTubeEmbedUrl(url: string): string | null {
 
 function renderVideoEmbed(embedUrl: string): string {
 	return `<div class="video-embed"><iframe src="${escapeHtml(embedUrl)}" frameborder="0" allowfullscreen allow="${EMBED_ALLOW}"></iframe></div>\n`;
+}
+
+function isExplicitYouTubeEmbedLink(token: Tokens.Link): boolean {
+	return token.text.trim().toLowerCase() === EXPLICIT_YOUTUBE_EMBED_LABEL;
 }
 
 function sanitizeHref(href: string): string | null {
@@ -198,13 +203,10 @@ function createRenderer() {
 	};
 
 	renderer.link = function (this: InstanceType<typeof marked.Renderer>, token: Tokens.Link): string {
-		const embedUrl = getYouTubeEmbedUrl(token.href);
-		if (embedUrl) {
-			return renderVideoEmbed(embedUrl);
-		}
-
 		const href = sanitizeHref(token.href);
-		const text = String(this.parser.parseInline(token.tokens));
+		const text = isExplicitYouTubeEmbedLink(token)
+			? escapeHtml(token.href)
+			: String(this.parser.parseInline(token.tokens));
 
 		if (!href) {
 			return text;

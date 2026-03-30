@@ -4,6 +4,7 @@ import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoint
 import { NotionToMarkdown } from 'notion-to-md';
 import type { RequestHandler } from './$types';
 
+import { getYouTubeEmbedUrl } from '$lib/server/blog/render';
 import { db } from '$lib/server/db';
 import { blogPost } from '$lib/server/db/schema';
 import type { NewBlogPost } from '$lib/server/db/schema';
@@ -17,14 +18,14 @@ const n2m = new NotionToMarkdown({ notionClient: notion });
 n2m.setCustomTransformer('embed', async (block) => {
 	const url = (block as any).embed?.url ?? '';
 	if (!url) return false;
-	return `[youtube-embed](${url})`;
+	return getYouTubeEmbedUrl(url) ? `[youtube-embed](${url})` : `[${url}](${url})`;
 });
 
 n2m.setCustomTransformer('video', async (block) => {
 	const video = (block as any).video;
 	const url = video?.external?.url ?? video?.file?.url ?? '';
 	if (!url) return false;
-	return `[youtube-embed](${url})`;
+	return getYouTubeEmbedUrl(url) ? `[youtube-embed](${url})` : `[${url}](${url})`;
 });
 
 type Properties = PageObjectResponse['properties'];

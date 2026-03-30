@@ -1,11 +1,11 @@
 <script lang="ts">
+	import { getActiveHeadingId, normalizeHashId, type HeadingPosition } from '$lib/blog/toc';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	const { post, htmlContent, readingMinutes, tableOfContents } = data;
 
-	const eyebrow = post.tags?.[0] ?? 'Article';
 	const dateFormatter = new Intl.DateTimeFormat('en-US', {
 		year: 'numeric',
 		month: 'long',
@@ -18,42 +18,83 @@
 			: null;
 
 	let articleBody: HTMLElement | null = null;
-	let readingProgress = $state(0);
+	let activeHeadingId = $state(tableOfContents[0]?.id ?? '');
 
-	function clamp(value: number, min: number, max: number) {
-		return Math.min(Math.max(value, min), max);
+	function collectHeadingPositions(): HeadingPosition[] {
+		if (!articleBody) {
+			return [];
+		}
+
+		const scrollTop = typeof window === 'undefined' ? 0 : window.scrollY;
+
+		return Array.from(articleBody.querySelectorAll<HTMLElement>('h2[id], h3[id]')).map(
+			(heading) => ({
+				id: heading.id,
+				top: heading.getBoundingClientRect().top + scrollTop
+			})
+		);
 	}
 
-	function updateReadingProgress() {
-		if (!articleBody || typeof window === 'undefined') {
-			readingProgress = 0;
+	function syncActiveHeadingFromHash() {
+		if (typeof window === 'undefined') {
 			return;
 		}
 
-		const rect = articleBody.getBoundingClientRect();
-		const start = window.scrollY + rect.top - 160;
-		const end = start + rect.height - window.innerHeight * 0.45;
-		const nextProgress =
-			end <= start ? 1 : (window.scrollY - start) / Math.max(end - start, window.innerHeight);
+		const hashId = normalizeHashId(window.location.hash);
+		if (hashId && tableOfContents.some((item) => item.id === hashId)) {
+			activeHeadingId = hashId;
+		}
+	}
 
-		readingProgress = clamp(nextProgress, 0, 1);
+	function syncActiveHeading() {
+		if (typeof window === 'undefined') {
+			return;
+		}
+
+		const nextActiveId = getActiveHeadingId(
+			collectHeadingPositions(),
+			window.scrollY,
+			window.innerHeight,
+			document.documentElement.scrollHeight
+		);
+
+		if (nextActiveId) {
+			activeHeadingId = nextActiveId;
+		}
+	}
+
+	function setActiveHeading(id: string) {
+		activeHeadingId = id;
 	}
 
 	onMount(() => {
-		updateReadingProgress();
+		if (!tableOfContents.length) {
+			return;
+		}
 
-		const handleUpdate = () => updateReadingProgress();
-		const resizeObserver = articleBody ? new ResizeObserver(handleUpdate) : null;
+		const handleScroll = () => syncActiveHeading();
+		const handleHashChange = () => {
+			syncActiveHeadingFromHash();
+			requestAnimationFrame(syncActiveHeading);
+		};
+		const resizeObserver = articleBody ? new ResizeObserver(() => syncActiveHeading()) : null;
 
-		window.addEventListener('scroll', handleUpdate, { passive: true });
-		window.addEventListener('resize', handleUpdate);
+		requestAnimationFrame(() => {
+			syncActiveHeadingFromHash();
+			syncActiveHeading();
+		});
+
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		window.addEventListener('resize', handleScroll);
+		window.addEventListener('hashchange', handleHashChange);
 		if (articleBody) {
 			resizeObserver?.observe(articleBody);
 		}
 
 		return () => {
-			window.removeEventListener('scroll', handleUpdate);
-			window.removeEventListener('resize', handleUpdate);
+			window.removeEventListener('scroll', handleScroll);
+			window.removeEventListener('resize', handleScroll);
+			window.removeEventListener('hashchange', handleHashChange);
 			resizeObserver?.disconnect();
 		};
 	});
@@ -83,36 +124,31 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link
-		href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap"
+		href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
 		rel="stylesheet"
 	/>
 </svelte:head>
-
-<div class="blog-progress" aria-hidden="true">
-	<span style={`transform: scaleX(${readingProgress})`}></span>
-</div>
 
 <article class="blog-shell">
 	<header class="blog-hero">
 		<div class="blog-hero__inner" class:blog-hero__inner--with-media={!!post.featuredImageUrl}>
 			<div class="blog-hero__copy">
-				<div class="blog-eyebrow blog-ui">{eyebrow}</div>
-				<h1 class="blog-title">{post.title}</h1>
-
 				<div class="blog-meta blog-ui">
-					{#if post.author}
-						<span>By {post.author}</span>
-					{/if}
 					{#if publishedDate}
 						<time datetime={post.publishedAt ?? undefined}>{publishedDate}</time>
 					{/if}
 					{#if readingMinutes > 0}
 						<span>{readingMinutes} min read</span>
 					{/if}
+					{#if post.author}
+						<span>{post.author}</span>
+					{/if}
 					{#if updatedDate}
 						<span>Updated {updatedDate}</span>
 					{/if}
 				</div>
+
+				<h1 class="blog-title">{post.title}</h1>
 
 				{#if post.summary}
 					<p class="blog-deck">{post.summary}</p>
@@ -147,6 +183,9 @@
 									href={`#${item.id}`}
 									class="blog-toc__link"
 									class:blog-toc__link--nested={item.level === 3}
+									class:blog-toc__link--active={activeHeadingId === item.id}
+									aria-current={activeHeadingId === item.id ? 'location' : undefined}
+									onclick={() => setActiveHeading(item.id)}
 								>
 									{item.text}
 								</a>
@@ -176,6 +215,9 @@
 									href={`#${item.id}`}
 									class="blog-toc__link"
 									class:blog-toc__link--nested={item.level === 3}
+									class:blog-toc__link--active={activeHeadingId === item.id}
+									aria-current={activeHeadingId === item.id ? 'location' : undefined}
+									onclick={() => setActiveHeading(item.id)}
 								>
 									{item.text}
 								</a>
