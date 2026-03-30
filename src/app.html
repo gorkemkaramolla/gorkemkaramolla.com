@@ -1,8 +1,21 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" class="">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script>
+			(function () {
+				var match = document.cookie.match(/(?:^|;\s*)theme=(\w+)/);
+				var stored = match ? match[1] : null;
+				var theme =
+					stored === 'dark' || stored === 'light'
+						? stored
+						: window.matchMedia('(prefers-color-scheme: dark)').matches
+							? 'dark'
+							: 'light';
+				document.documentElement.classList.toggle('dark', theme === 'dark');
+			})();
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
