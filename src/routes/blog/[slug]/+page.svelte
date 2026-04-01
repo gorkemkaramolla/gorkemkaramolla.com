@@ -154,12 +154,6 @@
 	{#if post.ogImage}
 		<meta property="og:image" content={post.ogImage} />
 	{/if}
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-	<link
-		href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-		rel="stylesheet"
-	/>
 </svelte:head>
 
 <article class="blog-page">
@@ -192,7 +186,7 @@
 
 				{#if post.tags && post.tags.length > 0}
 					<ul class="blog-tag-list" aria-label="Topics">
-						{#each post.tags as tag}
+						{#each post.tags as tag (tag)}
 							<li class="blog-tag">{tag}</li>
 						{/each}
 					</ul>
@@ -213,7 +207,7 @@
 				<nav class="blog-toc blog-toc--mobile" aria-labelledby="blog-toc-mobile-title">
 					<p id="blog-toc-mobile-title" class="blog-toc__title">On this page</p>
 					<ol class="blog-toc__list">
-						{#each tableOfContents as item}
+						{#each tableOfContents as item (item.id)}
 							<li>
 								<a
 									href={`#${item.id}`}
@@ -233,6 +227,7 @@
 
 			<div class="blog-prose" bind:this={articleBody}>
 				{#if htmlContent}
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 					{@html htmlContent}
 				{:else}
 					<p class="blog-empty">No content available yet.</p>
@@ -245,7 +240,7 @@
 				<nav class="blog-toc" aria-labelledby="blog-toc-desktop-title">
 					<p id="blog-toc-desktop-title" class="blog-toc__title">On this page</p>
 					<ol class="blog-toc__list">
-						{#each tableOfContents as item}
+						{#each tableOfContents as item (item.id)}
 							<li>
 								<a
 									href={`#${item.id}`}

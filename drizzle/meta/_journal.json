@@ -15,6 +15,13 @@
       "when": 1774697918411,
       "tag": "0001_oval_sasquatch",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775051577794,
+      "tag": "0002_majestic_violations",
+      "breakpoints": true
     }
   ]
 }

@@ -10,6 +10,33 @@
 		alt?: string;
 	}
 
+	export interface CinematicContentItem {
+		label: string;
+		meta?: string;
+		href?: string;
+	}
+
+	interface CinematicPanelBase {
+		href?: string;
+	}
+
+	export interface CinematicImagePanel extends CinematicPanelBase {
+		type: 'image';
+		src: string;
+		alt?: string;
+	}
+
+	export interface CinematicContentPanel extends CinematicPanelBase {
+		type: 'content';
+		eyebrow?: string;
+		title: string;
+		description?: string;
+		items?: CinematicContentItem[];
+		footer?: string;
+	}
+
+	export type CinematicPanel = CinematicImagePanel | CinematicContentPanel;
+
 	export interface CinematicCaption {
 		text: string;
 		position: CaptionPosition;
@@ -19,9 +46,12 @@
 
 	export interface CinematicScene {
 		type: 'single' | 'collage';
-		images: CinematicImage[];
+		panels?: CinematicPanel[];
+		images?: CinematicImage[];
 		captions?: CinematicCaption[];
 		durationMs?: number;
+		href?: string;
+		ariaLabel?: string;
 	}
 
 	interface Props {
@@ -67,6 +97,7 @@
 
 	const sceneCount = $derived(scenes.length);
 	const currentScene = $derived(scenes[currentIndex]);
+	const currentPanels = $derived(getScenePanels(currentScene));
 
 	const KB_DIRECTIONS = ['kenburns-nw', 'kenburns-ne', 'kenburns-sw', 'kenburns-se'] as const;
 
@@ -85,6 +116,22 @@
 		return (currentScene?.captions ?? []).filter((c) => (c.panel ?? 1) === panelNum);
 	}
 
+	function getScenePanels(scene: CinematicScene | undefined): CinematicPanel[] {
+		if (!scene) {
+			return [];
+		}
+
+		if (scene.panels?.length) {
+			return scene.panels;
+		}
+
+		return (scene.images ?? []).map((image) => ({
+			type: 'image',
+			src: image.src,
+			alt: image.alt
+		}));
+	}
+
 	function clearFrameTimeout() {
 		if (frameTimeout) {
 			clearTimeout(frameTimeout);
@@ -101,8 +148,8 @@
 
 	function getPanelCount(): number {
 		if (!currentScene) return 0;
-		if (currentScene.type === 'single') return Math.min(1, currentScene.images.length);
-		return Math.min(3, currentScene.images.length);
+		if (currentScene.type === 'single') return Math.min(1, currentPanels.length);
+		return Math.min(3, currentPanels.length);
 	}
 
 	function startSceneSequence() {
@@ -189,52 +236,115 @@
 	});
 
 	$effect(() => {
-		currentIndex = Math.min(Math.max(0, startIndex), Math.max(0, sceneCount - 1));
-	});
-
-	$effect(() => {
-		currentIndex;
-		autoplay;
-		isPaused;
-		hasFocus;
-		defaultDurationMs;
-		currentScene?.durationMs;
-		currentScene?.type;
-		currentScene?.images.length;
 		scheduleAutoplay();
 		return () => clearFrameTimeout();
 	});
 
 	$effect(() => {
-		currentIndex;
-		currentScene?.captions?.length;
-		currentScene?.images.length;
 		startSceneSequence();
 		return () => clearSequenceTimeouts();
 	});
 </script>
 
-{#snippet panel(panelIdx: number, src: string, depth: number)}
+{#snippet panel(panelIdx: number, panel: CinematicPanel, depth: number)}
 	<div class="relative h-full w-full overflow-hidden" style={panelParallaxStyle(depth)}>
-		<div class={cn('h-full w-full', getKenBurnsClass(panelIdx))}>
-			<DitherShader
-				{src}
-				pointerInteractive={true}
-				pointerMode="pan"
-				gridSize={1}
-				colorMode="duotone"
-				primaryColor="#161a1e"
-				secondaryColor="#d2d7dd"
-				contrast={1.12}
-				brightness={-0.03}
-				threshold={0.5}
-				className="rounded-none"
-			/>
-		</div>
-		{#each getCaptionsForPanel(panelIdx + 1) as caption}
+		{#if panel.type === 'content'}
+			<div
+				class="relative h-full w-full border border-black/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,247,251,0.98))] dark:border-white/10 dark:bg-[#050608]"
+			>
+				<div
+					aria-hidden="true"
+					class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.14),transparent_44%),linear-gradient(180deg,rgba(15,23,42,0.03),transparent_32%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.16),transparent_44%),linear-gradient(180deg,rgba(255,255,255,0.05),transparent_32%)]"
+				></div>
+				<div
+					aria-hidden="true"
+					class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-500/70 to-transparent"
+				></div>
+				<div class="relative flex h-full flex-col justify-between gap-6 p-5 md:p-6">
+					<div class="space-y-4">
+						{#if panel.eyebrow}
+							<p
+								class="text-[0.68rem] font-semibold tracking-[0.24em] text-orange-500/85 uppercase"
+							>
+								{panel.eyebrow}
+							</p>
+						{/if}
+						<h3
+							class="max-w-[14ch] text-2xl font-semibold tracking-[-0.05em] text-foreground dark:text-white"
+						>
+							{panel.title}
+						</h3>
+						{#if panel.description}
+							<p class="max-w-[30ch] text-sm leading-6 text-muted-foreground dark:text-white/65">
+								{panel.description}
+							</p>
+						{/if}
+					</div>
+
+					<div class="space-y-3">
+						{#if panel.items && panel.items.length > 0}
+							{#each panel.items as item, itemIndex (item.label)}
+								<div
+									class="rounded-2xl border border-border/70 bg-background/70 px-4 py-3 dark:border-white/10 dark:bg-white/[0.03]"
+								>
+									<div class="flex items-start gap-3">
+										<span
+											class="mt-1 text-[0.66rem] font-semibold tracking-[0.2em] text-muted-foreground/70 uppercase dark:text-white/35"
+										>
+											0{itemIndex + 1}
+										</span>
+										<div class="space-y-1">
+											<p class="text-sm leading-6 font-medium text-foreground dark:text-white/92">
+												{item.label}
+											</p>
+											{#if item.meta}
+												<p
+													class="text-[0.68rem] tracking-[0.18em] text-muted-foreground/80 uppercase dark:text-white/45"
+												>
+													{item.meta}
+												</p>
+											{/if}
+										</div>
+									</div>
+								</div>
+							{/each}
+						{:else}
+							<p class="text-sm leading-6 text-muted-foreground dark:text-white/58">
+								New field notes are being prepared.
+							</p>
+						{/if}
+					</div>
+
+					{#if panel.footer}
+						<p
+							class="text-[0.72rem] tracking-[0.18em] text-muted-foreground/80 uppercase dark:text-white/42"
+						>
+							{panel.footer}
+						</p>
+					{/if}
+				</div>
+			</div>
+		{:else}
+			<div class={cn('h-full w-full', getKenBurnsClass(panelIdx))}>
+				<DitherShader
+					src={panel.src}
+					pointerInteractive={true}
+					pointerMode="pan"
+					gridSize={1}
+					colorMode="duotone"
+					primaryColor="#161a1e"
+					secondaryColor="#d2d7dd"
+					contrast={1.12}
+					brightness={-0.03}
+					threshold={0.5}
+					className="rounded-none"
+				/>
+			</div>
+		{/if}
+		{#each getCaptionsForPanel(panelIdx + 1) as caption (`${panelIdx}-${caption.text}-${caption.position}`)}
 			<div
 				class={cn(
-					'pointer-events-none absolute z-10 border border-[#2a2520] bg-[#e8e4dc] px-4 py-2.5 text-[0.85rem] font-bold uppercase leading-snug tracking-wide text-[#1a1714] shadow-[2px_3px_0_rgba(0,0,0,0.4)]',
+					'pointer-events-none absolute z-10 border border-[#2a2520] bg-[#e8e4dc] px-4 py-2.5 text-[0.85rem] leading-snug font-bold tracking-wide text-[#1a1714] uppercase shadow-[2px_3px_0_rgba(0,0,0,0.4)]',
 					CAPTION_POS_CLASSES[caption.position]
 				)}
 				style={caption.maxWidth ? `max-width:${caption.maxWidth}` : ''}
@@ -248,10 +358,11 @@
 <div
 	bind:this={rootEl}
 	class={cn(
-		'relative w-full overflow-hidden rounded-xl border border-white/10 bg-black text-white shadow-[0_20px_50px_rgba(0,0,0,0.7)]',
+		'relative w-full overflow-hidden rounded-xl border border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,247,251,0.98))] text-foreground shadow-[0_20px_50px_rgba(148,163,184,0.22)] dark:border-white/10 dark:bg-black dark:text-white dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)]',
 		className
 	)}
 	role="region"
+	aria-label={currentScene?.ariaLabel ?? 'Cinematic scene'}
 	aria-roledescription="comic cinematic slideshow"
 	onfocusin={() => (hasFocus = true)}
 	onfocusout={() => (hasFocus = false)}
@@ -259,86 +370,108 @@
 	onmouseleave={() => (isPaused = false)}
 >
 	<div
-		class={cn('relative w-full overflow-hidden bg-black', panelHeightClass)}
-		role="img"
-		aria-label="Cinematic scene"
+		class={cn('relative w-full overflow-hidden bg-background/80 dark:bg-black', panelHeightClass)}
+		role="group"
+		aria-label={currentScene?.ariaLabel ?? 'Cinematic scene canvas'}
 		onmousemove={handleParallaxMove}
 		onmouseleave={resetParallax}
 	>
-		{#if currentScene?.type === 'collage'}
-			{#if currentScene.images.length >= 3}
-				<div class="grid h-full w-full grid-cols-2 grid-rows-[1.2fr_1fr] gap-2 bg-black p-2">
+		{#if currentPanels.length === 0}
+			<div
+				class="flex h-full items-center justify-center border border-dashed border-border/70 bg-background/75 p-6 text-sm tracking-[0.18em] text-muted-foreground uppercase dark:border-white/10 dark:bg-black/80 dark:text-white/40"
+			>
+				Scene unavailable
+			</div>
+		{:else if currentScene?.type === 'collage'}
+			{#if currentPanels.length >= 3}
+				<div
+					class="grid h-full w-full grid-cols-2 grid-rows-[1.2fr_1fr] gap-2 bg-background/75 p-2 dark:bg-black"
+				>
 					<div
 						class={cn(
 							'col-span-2 overflow-hidden transition-all duration-1000 ease-out',
-							visiblePanelCount >= 1 ? 'scale-100 opacity-100 blur-0' : 'scale-105 opacity-0 blur-sm'
+							visiblePanelCount >= 1
+								? 'blur-0 scale-100 opacity-100'
+								: 'scale-105 opacity-0 blur-sm'
 						)}
 					>
-						{@render panel(0, currentScene.images[0]?.src ?? '', 0.8)}
+						{@render panel(0, currentPanels[0], 0.8)}
 					</div>
 					<div
 						class={cn(
 							'overflow-hidden transition-all duration-1000 ease-out',
-							visiblePanelCount >= 2 ? 'scale-100 opacity-100 blur-0' : 'scale-105 opacity-0 blur-sm'
+							visiblePanelCount >= 2
+								? 'blur-0 scale-100 opacity-100'
+								: 'scale-105 opacity-0 blur-sm'
 						)}
 					>
-						{@render panel(1, currentScene.images[1]?.src ?? '', 1)}
+						{@render panel(1, currentPanels[1], 1)}
 					</div>
 					<div
 						class={cn(
 							'overflow-hidden transition-all duration-1000 ease-out',
-							visiblePanelCount >= 3 ? 'scale-100 opacity-100 blur-0' : 'scale-105 opacity-0 blur-sm'
+							visiblePanelCount >= 3
+								? 'blur-0 scale-100 opacity-100'
+								: 'scale-105 opacity-0 blur-sm'
 						)}
 					>
-						{@render panel(2, currentScene.images[2]?.src ?? '', 1.15)}
+						{@render panel(2, currentPanels[2], 1.15)}
 					</div>
 				</div>
-			{:else if currentScene.images.length === 2}
-				<div class="grid h-full w-full grid-cols-2 gap-2 bg-black p-2">
+			{:else if currentPanels.length === 2}
+				<div class="grid h-full w-full grid-cols-2 gap-2 bg-background/75 p-2 dark:bg-black">
 					<div
 						class={cn(
 							'overflow-hidden transition-all duration-1000 ease-out',
-							visiblePanelCount >= 1 ? 'scale-100 opacity-100 blur-0' : 'scale-105 opacity-0 blur-sm'
+							visiblePanelCount >= 1
+								? 'blur-0 scale-100 opacity-100'
+								: 'scale-105 opacity-0 blur-sm'
 						)}
 					>
-						{@render panel(0, currentScene.images[0]?.src ?? '', 0.95)}
+						{@render panel(0, currentPanels[0], 0.95)}
 					</div>
 					<div
 						class={cn(
 							'overflow-hidden transition-all duration-1000 ease-out',
-							visiblePanelCount >= 2 ? 'scale-100 opacity-100 blur-0' : 'scale-105 opacity-0 blur-sm'
+							visiblePanelCount >= 2
+								? 'blur-0 scale-100 opacity-100'
+								: 'scale-105 opacity-0 blur-sm'
 						)}
 					>
-						{@render panel(1, currentScene.images[1]?.src ?? '', 1.1)}
+						{@render panel(1, currentPanels[1], 1.1)}
 					</div>
 				</div>
 			{:else}
-				<div class="h-full w-full bg-black p-2">
+				<div class="h-full w-full bg-background/75 p-2 dark:bg-black">
 					<div
 						class={cn(
 							'h-full w-full overflow-hidden transition-all duration-1000 ease-out',
-							visiblePanelCount >= 1 ? 'scale-100 opacity-100 blur-0' : 'scale-105 opacity-0 blur-sm'
+							visiblePanelCount >= 1
+								? 'blur-0 scale-100 opacity-100'
+								: 'scale-105 opacity-0 blur-sm'
 						)}
 					>
-						{@render panel(0, currentScene.images[0]?.src ?? '', 1)}
+						{@render panel(0, currentPanels[0], 1)}
 					</div>
 				</div>
 			{/if}
 		{:else}
-			<div class="h-full w-full bg-black p-2">
+			<div class="h-full w-full bg-background/75 p-2 dark:bg-black">
 				<div
 					class={cn(
 						'h-full w-full overflow-hidden transition-all duration-1000 ease-out',
-						visiblePanelCount >= 1 ? 'scale-100 opacity-100 blur-0' : 'scale-105 opacity-0 blur-sm'
+						visiblePanelCount >= 1 ? 'blur-0 scale-100 opacity-100' : 'scale-105 opacity-0 blur-sm'
 					)}
 				>
-					{@render panel(0, currentScene?.images?.[0]?.src ?? '', 1)}
+					{@render panel(0, currentPanels[0], 1)}
 				</div>
 			</div>
 		{/if}
 
 		<!-- Vignette -->
-		<div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.65)_100%)]"></div>
+		<div
+			class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_50%,rgba(15,23,42,0.12)_100%)] dark:bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.65)_100%)]"
+		></div>
 
 		<!-- Rain -->
 		<div class="rain-overlay"></div>
@@ -348,7 +481,9 @@
 	</div>
 
 	{#if showControls}
-		<div class="flex items-center justify-between border-t border-white/10 bg-black/80 px-3 py-2 text-xs uppercase tracking-[0.2em] text-white/50">
+		<div
+			class="flex items-center justify-between border-t border-border/70 bg-background/75 px-3 py-2 text-xs tracking-[0.2em] text-muted-foreground uppercase dark:border-white/10 dark:bg-black/80 dark:text-white/50"
+		>
 			<span>{currentIndex + 1} / {sceneCount}</span>
 		</div>
 	{/if}

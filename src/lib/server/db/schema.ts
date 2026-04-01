@@ -1,4 +1,13 @@
-import { pgTable, pgEnum, serial, integer, text, boolean, date } from 'drizzle-orm/pg-core';
+import {
+	pgTable,
+	pgEnum,
+	serial,
+	integer,
+	text,
+	boolean,
+	date,
+	timestamp
+} from 'drizzle-orm/pg-core';
 
 export const task = pgTable('task', {
 	id: serial('id').primaryKey(),
@@ -7,6 +16,7 @@ export const task = pgTable('task', {
 });
 
 export const statusEnum = pgEnum('status', ['draft', 'review', 'published']);
+export const contactLeadSourceEnum = pgEnum('contact_lead_source', ['chat', 'mail_card']);
 
 export const blogPost = pgTable('blog_post', {
 	id: serial('id').primaryKey(),
@@ -31,5 +41,18 @@ export const blogPost = pgTable('blog_post', {
 	mdContent: text('md_content')
 });
 
+export const contactLead = pgTable('contact_lead', {
+	id: serial('id').primaryKey(),
+	email: text('email').notNull(),
+	message: text('message'),
+	transcript: text('transcript').notNull().default('[]'),
+	sourcePath: text('source_path').notNull(),
+	sourceSurface: contactLeadSourceEnum('source_surface').notNull(),
+	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+	handled: boolean('handled').notNull().default(false)
+});
+
 export type BlogPost = typeof blogPost.$inferSelect;
 export type NewBlogPost = typeof blogPost.$inferInsert;
+export type ContactLead = typeof contactLead.$inferSelect;
+export type NewContactLead = typeof contactLead.$inferInsert;

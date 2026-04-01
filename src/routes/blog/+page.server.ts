@@ -2,6 +2,6 @@ import { getPublishedBlogPosts } from '$lib/server/blog/posts';
 
 export const load = async () => {
 	return {
-		featuredPosts: await getPublishedBlogPosts({ limit: 3 })
+		posts: await getPublishedBlogPosts()
 	};
 };
