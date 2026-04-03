@@ -7,7 +7,7 @@
 		{
 			type: 'collage',
 			durationMs: 7000,
-			ariaLabel: 'Cinematic dossier opening scene',
+			ariaLabel: 'Craft page opening scene',
 			panels: [
 				{
 					type: 'image',

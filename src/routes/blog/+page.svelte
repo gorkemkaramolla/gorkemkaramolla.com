@@ -45,7 +45,7 @@
 	>
 		<div class="space-y-6 lg:pt-4">
 			<p class="text-[0.72rem] font-semibold tracking-[0.3em] text-orange-500/85 uppercase">
-				Temporary index
+				Blog
 			</p>
 			<h1
 				class="max-w-[12ch] text-4xl font-semibold tracking-[-0.07em] text-foreground sm:text-5xl lg:text-[4.5rem] lg:leading-[0.92]"
@@ -53,15 +53,14 @@
 				Published notes, assembled in one place.
 			</h1>
 			<p class="max-w-3xl text-base leading-8 text-muted-foreground sm:text-lg">
-				A working archive of blog posts on software, product thinking, and internet craft. This page
-				is intentionally simple for now, but it renders the live published entries behind the
-				dossier.
+				Posts on software engineering, interfaces, and shipping—synced from the same source as the
+				home page highlights. Everything listed here is what is currently live.
 			</p>
 			<a
 				href={resolve('/')}
 				class="inline-flex items-center gap-2 text-sm font-medium text-foreground transition hover:text-orange-500 focus-visible:ring-2 focus-visible:ring-orange-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
 			>
-				Back to dossier
+				Back to home
 				<svg
 					aria-hidden="true"
 					xmlns="http://www.w3.org/2000/svg"

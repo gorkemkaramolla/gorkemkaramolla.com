@@ -5,7 +5,7 @@
 
 	let { data }: PageProps = $props();
 
-	type DossierEntry = {
+	type TimelineEntry = {
 		period: string;
 		title: string;
 		subtitle: string;
@@ -15,14 +15,13 @@
 		linkLabel?: string;
 	};
 
-	type DossierSection = {
+	type TimelineSection = {
 		id: 'projects' | 'work-experience' | 'school';
 		label: string;
-		eyebrow: string;
 		title: string;
 		description: string;
 		indexSummary: string;
-		entries: DossierEntry[];
+		entries: TimelineEntry[];
 	};
 
 	const mailtoHref = `mailto:${siteConfig.authorEmail}`;
@@ -31,22 +30,65 @@
 		{ label: 'GitHub', href: siteConfig.authorGithub, icon: 'github' }
 	] as const;
 
-	const dossierSections: DossierSection[] = [
+	const timelineSections: TimelineSection[] = [
+		{
+			id: 'work-experience',
+			label: 'Work experience',
+			title: 'Experience in production environments.',
+			description:
+				'Recent roles span internal product UIs, real-estate systems, and applied computer vision—work where delivery, clarity, and maintainability mattered as much as the feature list.',
+			indexSummary: 'Frontend and full-stack delivery, internal tools, and CV-backed product work.',
+			entries: [
+				{
+					period: 'Dec 2024 - Present',
+					title: 'Software Engineer',
+					subtitle: 'Torunlar GYO',
+					summary:
+						'Building real-estate systems and internal product surfaces with a pragmatic focus on stable delivery, clear interfaces, and maintainable frontend implementation.',
+					tags: ['React', 'TypeScript', 'Internal Tools']
+				},
+				{
+					period: 'Mar 2024 - Sep 2024',
+					title: 'Software Engineer',
+					subtitle: 'Istanbul Chamber of Industry',
+					summary:
+						'Worked on computer-vision and AI integrations, connecting Python model workflows to usable product surfaces and operational tooling.',
+					tags: ['Python', 'React', 'Computer Vision']
+				}
+			]
+		},
+		{
+			id: 'school',
+			label: 'Education',
+			title: 'Formal training, in brief.',
+			description:
+				'Undergraduate software engineering with emphasis on systems, databases, and application design—the baseline behind the shipping work above.',
+			indexSummary: 'B.Sc. in Software Engineering (English), Istanbul Nisantasi University.',
+			entries: [
+				{
+					period: 'Sep 2020 - Jun 2024',
+					title: 'Software Engineering (English)',
+					subtitle: 'Istanbul Nisantasi University',
+					summary:
+						'Built the formal base in software engineering, databases, systems thinking, and application design before moving fully into product work and AI-adjacent systems.',
+					tags: ['Software Engineering', 'Databases', 'Systems Design']
+				}
+			]
+		},
 		{
 			id: 'projects',
 			label: 'Projects',
-			eyebrow: 'Selected builds',
-			title: 'Projects with a public trail.',
+			title: 'Shipped work you can open in the repo.',
 			description:
-				'A short list of recent systems, packages, and portfolio work that shows how I tend to build: clear scope, visible craft, and working software over noise.',
-			indexSummary: 'Recent builds, open-source packages, and product experiments.',
+				'Selected repositories: this site, full-stack starters, speech tooling, and CV prototypes—each scoped to be useful, reviewable, and easy to run or extend.',
+			indexSummary: 'Open-source and portfolio code with links to GitHub.',
 			entries: [
 				{
 					period: '2026',
 					title: 'gorkemkaramolla.com',
-					subtitle: 'Personal site / cinematic dossier',
+					subtitle: 'Personal site',
 					summary:
-						'Rebuilt the portfolio as a SvelteKit dossier with Notion-backed writing, shader-driven media treatments, and a concierge-style contact flow.',
+						'This portfolio: SvelteKit, Tailwind v4, Notion-backed blog posts, Postgres, and a small contact flow—focused on fast loads and maintainable structure.',
 					tags: ['SvelteKit', 'Tailwind v4', 'Notion API', 'Postgres'],
 					href: 'https://github.com/gorkemkaramolla/gorkemkaramolla.com',
 					linkLabel: 'View repository'
@@ -82,78 +124,32 @@
 					linkLabel: 'View repository'
 				}
 			]
-		},
-		{
-			id: 'work-experience',
-			label: 'Work experience',
-			eyebrow: 'Experience log',
-			title: 'Work that shipped under real constraints.',
-			description:
-				'The production line so far: internal systems, applied frontend work, and AI-heavy prototypes that had to be useful to actual teams.',
-			indexSummary: 'Applied engineering work across product systems, CV, and internal tools.',
-			entries: [
-				{
-					period: 'Dec 2024 - Present',
-					title: 'Software Engineer',
-					subtitle: 'Torunlar GYO',
-					summary:
-						'Building real-estate systems and internal product surfaces with a pragmatic focus on stable delivery, clear interfaces, and maintainable frontend implementation.',
-					tags: ['React', 'TypeScript', 'Internal Tools']
-				},
-				{
-					period: 'Mar 2024 - Sep 2024',
-					title: 'Software Engineer',
-					subtitle: 'Istanbul Chamber of Industry',
-					summary:
-						'Worked on computer-vision and AI integrations, connecting Python model workflows to usable product surfaces and operational tooling.',
-					tags: ['Python', 'React', 'Computer Vision']
-				}
-			]
-		},
-		{
-			id: 'school',
-			label: 'School',
-			eyebrow: 'Education',
-			title: 'School, kept concise.',
-			description:
-				'Formal education stays short here. The useful signal is the software-engineering foundation behind the project and product work above.',
-			indexSummary: 'Software engineering foundation and the academic baseline behind the work.',
-			entries: [
-				{
-					period: 'Sep 2020 - Jun 2024',
-					title: 'Software Engineering (English)',
-					subtitle: 'Istanbul Nisantasi University',
-					summary:
-						'Built the formal base in software engineering, databases, systems thinking, and application design before moving fully into product work and AI-adjacent systems.',
-					tags: ['Software Engineering', 'Databases', 'Systems Design']
-				}
-			]
 		}
 	];
 
-	const dossierStats = [
+	const timelineStats = $derived([
 		{
-			value: String(dossierSections.length).padStart(2, '0'),
-			label: 'open lanes'
+			value: String(timelineSections.length).padStart(2, '0'),
+			label: 'sections'
 		},
 		{
 			value: String(
-				dossierSections.reduce((count, section) => count + section.entries.length, 0)
+				timelineSections.reduce((count, section) => count + section.entries.length, 0)
 			).padStart(2, '0'),
 			label: 'timeline entries'
 		},
 		{
-			value: '01',
-			label: 'clean inbox route'
+			value: String(data.featuredPosts.length).padStart(2, '0'),
+			label: 'featured posts'
 		}
-	];
+	]);
 </script>
 
 <svelte:head>
-	<title>{siteConfig.name} — cinematic dossier</title>
+	<title>{siteConfig.name} — Software engineer</title>
 	<meta
 		name="description"
-		content="Software engineer building deliberate systems and publishing field notes on software, interfaces, and the internet."
+		content="Software engineer in Istanbul: work history, education, selected projects, and technical writing on software and interfaces."
 	/>
 </svelte:head>
 
@@ -163,25 +159,25 @@
 	>
 		<div class="space-y-7 lg:py-6">
 			<p class="text-[0.72rem] font-semibold tracking-[0.3em] text-orange-500/85 uppercase">
-				Cinematic dossier
+				Portfolio
 			</p>
 			<h1
-				class="max-w-[12ch] text-4xl font-semibold tracking-[-0.07em] text-foreground sm:text-5xl lg:text-[4.5rem] lg:leading-[0.92]"
+				class="max-w-[15ch] text-4xl font-semibold tracking-[-0.07em] text-foreground sm:text-5xl lg:max-w-[18ch] lg:text-[4.5rem] lg:leading-[0.92]"
 			>
-				Projects, work, school, and writing in one dossier.
+				Experience, education, projects, and writing in one place.
 			</h1>
 			<p class="max-w-3xl text-base leading-8 text-muted-foreground sm:text-lg">
-				This page now carries the short version of the CV directly on the front page: selected
-				builds, work history, academic background, and the notes that explain how the systems get
-				made.
+				I am a software engineer focused on product-facing frontends, internal tools, and practical
+				AI integrations. This page summarizes where I have worked, what I studied, what I have
+				shipped publicly, and what I have published below.
 			</p>
 
 			<div class="flex flex-wrap items-center gap-3 pt-2">
 				<a
-					href="#projects"
+					href="#work-experience"
 					class="inline-flex items-center gap-2 rounded-full border border-orange-500/28 bg-orange-500/10 px-4 py-2 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:border-orange-500/45 hover:bg-orange-500/14 hover:text-orange-500 focus-visible:ring-2 focus-visible:ring-orange-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
 				>
-					Open timelines
+					Jump to experience
 					<svg
 						aria-hidden="true"
 						xmlns="http://www.w3.org/2000/svg"
@@ -238,7 +234,7 @@
 			</div>
 
 			<div class="grid gap-3 pt-2 sm:max-w-xl sm:grid-cols-3">
-				{#each dossierStats as stat (stat.label)}
+				{#each timelineStats as stat (stat.label)}
 					<div
 						class="rounded-[1.35rem] border border-border/70 bg-background/45 p-4 backdrop-blur-xl"
 					>
@@ -254,11 +250,11 @@
 		</div>
 
 		<aside
-			class="dossier-index-shell overflow-hidden rounded-[2rem] border border-border/70 p-6 backdrop-blur-xl lg:p-7"
+			class="profile-index-shell overflow-hidden rounded-[2rem] border border-border/70 p-6 backdrop-blur-xl lg:p-7"
 		>
 			<div class="flex items-center justify-between gap-4">
 				<p class="text-[0.68rem] font-semibold tracking-[0.24em] text-orange-500/78 uppercase">
-					Dossier index
+					On this page
 				</p>
 				<span
 					class="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/45 px-3 py-1 text-[0.62rem] font-semibold tracking-[0.2em] text-muted-foreground uppercase"
@@ -269,7 +265,7 @@
 			</div>
 
 			<div class="mt-6 space-y-3">
-				{#each dossierSections as section, index (section.id)}
+				{#each timelineSections as section, index (section.id)}
 					<a
 						href={`#${section.id}`}
 						class="group flex items-start gap-4 rounded-[1.45rem] border border-border/70 bg-background/42 p-4 transition hover:-translate-y-0.5 hover:border-orange-500/30 hover:bg-background/62 focus-visible:ring-2 focus-visible:ring-orange-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
@@ -312,8 +308,7 @@
 					Reach
 				</p>
 				<p class="mt-3 text-sm leading-7 text-muted-foreground">
-					If you need the fuller PDF version or a direct walkthrough, email is still the cleanest
-					route.
+					For hiring, collaboration, or a full CV, email is the most reliable way to reach me.
 				</p>
 				<a
 					href={mailtoHref}
@@ -343,29 +338,22 @@
 		<div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
 			<div class="space-y-2">
 				<p class="text-[0.72rem] font-semibold tracking-[0.24em] text-orange-500/85 uppercase">
-					Live timelines
+					Work & Education
 				</p>
 				<h2
 					class="max-w-[15ch] text-3xl font-semibold tracking-[-0.05em] text-foreground sm:text-4xl"
 				>
-					Not hidden behind a separate CV page.
+					EXPERIENCES
 				</h2>
 			</div>
-			<p class="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-				Open any lane to scan the arc from projects to roles to school. The structure is
-				chronological, the copy stays tight, and the writing archive still sits underneath.
-			</p>
 		</div>
 
-		{#each dossierSections as section (section.id)}
+		{#each timelineSections as section (section.id)}
 			<section
 				id={section.id}
 				class="timeline-shell grid scroll-mt-28 gap-6 rounded-[2rem] border border-border/70 p-6 backdrop-blur-xl lg:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] lg:gap-8 lg:p-8"
 			>
 				<div class="space-y-4 lg:pr-4">
-					<p class="text-[0.72rem] font-semibold tracking-[0.24em] text-orange-500/85 uppercase">
-						{section.eyebrow}
-					</p>
 					<h2
 						class="max-w-[12ch] text-3xl font-semibold tracking-[-0.05em] text-foreground sm:text-[2.4rem] sm:leading-[1.02]"
 					>
@@ -377,7 +365,7 @@
 				</div>
 
 				<div class="timeline-list relative space-y-4 lg:pl-10">
-					{#each section.entries as entry (entry.title)}
+					{#each section.entries as entry (entry.period + '::' + entry.subtitle)}
 						<article
 							class="timeline-card relative overflow-hidden rounded-[1.6rem] border border-border/70 p-5 sm:p-6"
 						>
@@ -452,12 +440,12 @@
 					Latest writing
 				</p>
 				<h2 class="text-3xl font-semibold tracking-[-0.05em] text-foreground sm:text-4xl">
-					Scene notes, not a feed dump.
+					Technical writing, not a social feed.
 				</h2>
 			</div>
 			<p class="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-				The timelines above handle the short-form record. The writing section is where the
-				reasoning, breakdowns, and implementation notes get more room.
+				The sections above stay short. Posts here go deeper on implementation choices, tradeoffs, and
+				what held up after shipping.
 			</p>
 		</div>
 
@@ -471,14 +459,14 @@
 			<div
 				class="rounded-xl border border-border/70 bg-background/45 p-6 text-muted-foreground backdrop-blur-xl"
 			>
-				Published notes will appear here once they land.
+				New posts will show here when they are published.
 			</div>
 		{/if}
 	</section>
 </div>
 
 <style>
-	.dossier-index-shell {
+	.profile-index-shell {
 		background:
 			radial-gradient(circle at top, rgb(249 115 22 / 0.12), transparent 50%),
 			linear-gradient(180deg, rgb(255 255 255 / 0.9), rgb(244 246 251 / 0.96));
@@ -515,7 +503,7 @@
 		}
 	}
 
-	:global(.dark) .dossier-index-shell {
+	:global(.dark) .profile-index-shell {
 		border-color: rgb(255 255 255 / 0.1);
 		background:
 			radial-gradient(circle at top, rgb(249 115 22 / 0.12), transparent 50%),
