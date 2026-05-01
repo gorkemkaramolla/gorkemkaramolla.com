@@ -78,17 +78,10 @@
 		{
 			id: 'projects',
 			label: 'Projects',
-<<<<<<< HEAD
 			eyebrow: 'Projects',
 			title: 'Projects',
 			description: '',
 			indexSummary: 'Recent builds, open-source packages, and product experiments.',
-=======
-			title: 'Shipped work you can open in the repo.',
-			description:
-				'Selected repositories: this site, full-stack starters, speech tooling, and CV prototypes—each scoped to be useful, reviewable, and easy to run or extend.',
-			indexSummary: 'Open-source and portfolio code with links to GitHub.',
->>>>>>> b89b284e9347deec0f9e7910c745011eb89c7dfc
 			entries: [
 				{
 					period: '2026',
@@ -171,20 +164,11 @@
 			<h1
 				class="max-w-[15ch] text-4xl font-semibold tracking-[-0.07em] text-foreground sm:text-5xl lg:max-w-[18ch] lg:text-[4.5rem] lg:leading-[0.92]"
 			>
-<<<<<<< HEAD
 				Software Engineer
 			</h1>
 			<p class="max-w-3xl text-base leading-8 text-muted-foreground sm:text-lg">
 				I am Görkem Karamolla. Software Engineer specialised in Web Development I develop full-stack
 				applications
-=======
-				Experience, education, projects, and writing in one place.
-			</h1>
-			<p class="max-w-3xl text-base leading-8 text-muted-foreground sm:text-lg">
-				I am a software engineer focused on product-facing frontends, internal tools, and practical
-				AI integrations. This page summarizes where I have worked, what I studied, what I have
-				shipped publicly, and what I have published below.
->>>>>>> b89b284e9347deec0f9e7910c745011eb89c7dfc
 			</p>
 
 			<div class="flex flex-wrap items-center gap-3 pt-2">
@@ -192,11 +176,7 @@
 					href="#work-experience"
 					class="inline-flex items-center gap-2 rounded-full border border-orange-500/28 bg-orange-500/10 px-4 py-2 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:border-orange-500/45 hover:bg-orange-500/14 hover:text-orange-500 focus-visible:ring-2 focus-visible:ring-orange-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
 				>
-<<<<<<< HEAD
 					About Me
-=======
-					Jump to experience
->>>>>>> b89b284e9347deec0f9e7910c745011eb89c7dfc
 					<svg
 						aria-hidden="true"
 						xmlns="http://www.w3.org/2000/svg"
@@ -354,24 +334,7 @@
 	</section>
 
 	<section class="grid gap-6">
-<<<<<<< HEAD
 		{#each dossierSections as section (section.id)}
-=======
-		<div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-			<div class="space-y-2">
-				<p class="text-[0.72rem] font-semibold tracking-[0.24em] text-orange-500/85 uppercase">
-					Work & Education
-				</p>
-				<h2
-					class="max-w-[15ch] text-3xl font-semibold tracking-[-0.05em] text-foreground sm:text-4xl"
-				>
-					EXPERIENCES
-				</h2>
-			</div>
-		</div>
-
-		{#each timelineSections as section (section.id)}
->>>>>>> b89b284e9347deec0f9e7910c745011eb89c7dfc
 			<section
 				id={section.id}
 				class="timeline-shell grid scroll-mt-28 gap-6 rounded-[2rem] border border-border/70 p-6 backdrop-blur-xl lg:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] lg:gap-8 lg:p-8"
@@ -388,11 +351,7 @@
 				</div>
 
 				<div class="timeline-list relative space-y-4 lg:pl-10">
-<<<<<<< HEAD
 					{#each section.entries as entry (`${section.id}-${entry.period}-${entry.title}-${entry.subtitle}`)}
-=======
-					{#each section.entries as entry (entry.period + '::' + entry.subtitle)}
->>>>>>> b89b284e9347deec0f9e7910c745011eb89c7dfc
 						<article
 							class="timeline-card relative overflow-hidden rounded-[1.6rem] border border-border/70 p-5 sm:p-6"
 						>
