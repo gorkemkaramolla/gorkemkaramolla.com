@@ -1,10 +1,12 @@
+import type { PageServerLoad } from './$types';
+
 import { renderBlogMarkdown } from '$lib/server/blog/render';
 import { db } from '$lib/server/db';
 import { blogPost } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 
-export const load = async ({ params }) => {
+export const load: PageServerLoad = async ({ params }) => {
 	const post = await db.query.blogPost.findFirst({
 		where: eq(blogPost.slug, params.slug)
 	});

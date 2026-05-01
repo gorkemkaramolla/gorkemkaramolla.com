@@ -1,6 +1,6 @@
 import type { OrbitAction } from '$lib/contact/contact.types';
 
-type InternalHref = '/' | '/blog' | '/craft';
+type InternalHref = '/' | '/blog';
 
 type NavLink = {
 	label: string;
@@ -59,7 +59,7 @@ const siteConfig: SiteConfig = {
 	authorGithub: 'https://github.com/gorkemkaramolla',
 	authorStackoverflow: 'https://stackoverflow.com/users/gorkemkaramolla',
 	authorReddit: 'https://reddit.com/user/gorkemkaramolla',
-	navLinks: [{ label: 'Blog', href: '/blog' }, { label: 'Craft', href: '/craft' }],
+	navLinks: [{ label: 'Blog', href: '/blog' }],
 	footerNav: [{ label: 'Home', href: '/' }],
 	footerSocials: [
 		{ label: 'GitHub', href: 'https://github.com/gorkemkaramolla', external: true },

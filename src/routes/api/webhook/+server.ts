@@ -16,14 +16,16 @@ const notion = new Client({
 const n2m = new NotionToMarkdown({ notionClient: notion });
 
 n2m.setCustomTransformer('embed', async (block) => {
-	const url = (block as any).embed?.url ?? '';
+	if (!('type' in block) || block.type !== 'embed') return false;
+	const url = block.embed.url;
 	if (!url) return false;
 	return getYouTubeEmbedUrl(url) ? `[youtube-embed](${url})` : `[${url}](${url})`;
 });
 
 n2m.setCustomTransformer('video', async (block) => {
-	const video = (block as any).video;
-	const url = video?.external?.url ?? video?.file?.url ?? '';
+	if (!('type' in block) || block.type !== 'video') return false;
+	const video = block.video;
+	const url = video.type === 'external' ? video.external.url : video.file.url;
 	if (!url) return false;
 	return getYouTubeEmbedUrl(url) ? `[youtube-embed](${url})` : `[${url}](${url})`;
 });

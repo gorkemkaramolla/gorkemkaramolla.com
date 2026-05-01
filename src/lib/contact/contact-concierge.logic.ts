@@ -70,7 +70,7 @@ export const curatedEmojiGroups: CuratedEmojiGroup[] = [
 		label: 'Work',
 		items: [
 			{ symbol: '💻', name: 'laptop', keywords: ['code', 'software', 'laptop'] },
-			{ symbol: '🛠️', name: 'tools', keywords: ['build', 'tools', 'craft'] },
+			{ symbol: '🛠️', name: 'tools', keywords: ['build', 'tools'] },
 			{ symbol: '📬', name: 'mailbox', keywords: ['mail', 'inbox', 'email'] },
 			{ symbol: '📄', name: 'document', keywords: ['cv', 'resume', 'document'] }
 		]

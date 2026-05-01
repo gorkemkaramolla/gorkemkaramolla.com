@@ -35,10 +35,9 @@
 		{
 			id: 'projects',
 			label: 'Projects',
-			eyebrow: 'Selected builds',
-			title: 'Projects with a public trail.',
-			description:
-				'A short list of recent systems, packages, and portfolio work that shows how I tend to build: clear scope, visible craft, and working software over noise.',
+			eyebrow: 'Projects',
+			title: 'Projects',
+			description: '',
 			indexSummary: 'Recent builds, open-source packages, and product experiments.',
 			entries: [
 				{
@@ -168,12 +167,11 @@
 			<h1
 				class="max-w-[12ch] text-4xl font-semibold tracking-[-0.07em] text-foreground sm:text-5xl lg:text-[4.5rem] lg:leading-[0.92]"
 			>
-				Projects, work, school, and writing in one dossier.
+				Software Engineer
 			</h1>
 			<p class="max-w-3xl text-base leading-8 text-muted-foreground sm:text-lg">
-				This page now carries the short version of the CV directly on the front page: selected
-				builds, work history, academic background, and the notes that explain how the systems get
-				made.
+				I am Görkem Karamolla. Software Engineer specialised in Web Development I develop full-stack
+				applications
 			</p>
 
 			<div class="flex flex-wrap items-center gap-3 pt-2">
@@ -181,7 +179,7 @@
 					href="#projects"
 					class="inline-flex items-center gap-2 rounded-full border border-orange-500/28 bg-orange-500/10 px-4 py-2 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:border-orange-500/45 hover:bg-orange-500/14 hover:text-orange-500 focus-visible:ring-2 focus-visible:ring-orange-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
 				>
-					Open timelines
+					About Me
 					<svg
 						aria-hidden="true"
 						xmlns="http://www.w3.org/2000/svg"
@@ -340,23 +338,6 @@
 	</section>
 
 	<section class="grid gap-6">
-		<div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-			<div class="space-y-2">
-				<p class="text-[0.72rem] font-semibold tracking-[0.24em] text-orange-500/85 uppercase">
-					Live timelines
-				</p>
-				<h2
-					class="max-w-[15ch] text-3xl font-semibold tracking-[-0.05em] text-foreground sm:text-4xl"
-				>
-					Not hidden behind a separate CV page.
-				</h2>
-			</div>
-			<p class="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-				Open any lane to scan the arc from projects to roles to school. The structure is
-				chronological, the copy stays tight, and the writing archive still sits underneath.
-			</p>
-		</div>
-
 		{#each dossierSections as section (section.id)}
 			<section
 				id={section.id}
@@ -377,7 +358,7 @@
 				</div>
 
 				<div class="timeline-list relative space-y-4 lg:pl-10">
-					{#each section.entries as entry (entry.title)}
+					{#each section.entries as entry (`${section.id}-${entry.period}-${entry.title}-${entry.subtitle}`)}
 						<article
 							class="timeline-card relative overflow-hidden rounded-[1.6rem] border border-border/70 p-5 sm:p-6"
 						>
