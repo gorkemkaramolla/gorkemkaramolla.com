@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { filterEmojiGroups, getScriptedReply } from './contact-concierge.logic';
+import { filterEmojiGroups, getScriptedReply } from './contact-chat.logic';
 
-describe('contact concierge logic', () => {
+describe('contact chat logic', () => {
 	it('matches project-oriented prompts to the project reply bucket', () => {
 		const result = getScriptedReply('We need help building a product interface.');
 

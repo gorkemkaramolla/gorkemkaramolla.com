@@ -10,7 +10,7 @@
 		filterEmojiGroups,
 		getScriptedReply,
 		orbitActionOffsets
-	} from '$lib/contact/contact-concierge.logic';
+	} from '$lib/contact/contact-chat.logic';
 	import { loadChatState, saveChatState } from '$lib/contact/contact-chat-storage';
 	import type { ContactLeadPayload, OrbitAction } from '$lib/contact/contact.types';
 	import { siteConfig } from '$lib/config/site-config';
