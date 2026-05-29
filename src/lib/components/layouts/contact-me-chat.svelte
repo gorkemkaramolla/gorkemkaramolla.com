@@ -128,6 +128,12 @@
 			openCvCard();
 			return;
 		}
+
+		if (action === 'linkedin') {
+			window.open(siteConfig.authorLinkedin, '_blank', 'noopener,noreferrer');
+			isOrbitOpen = false;
+			return;
+		}
 	}
 
 	function handleEscape(event: KeyboardEvent) {
@@ -664,7 +670,8 @@
 					class={cn(
 						'inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/70 bg-background/60 text-muted-foreground',
 						action.id === 'chat' && 'text-orange-600 dark:text-orange-400',
-						action.id === 'cv' && 'text-emerald-600 dark:text-emerald-300'
+						action.id === 'cv' && 'text-emerald-600 dark:text-emerald-300',
+						action.id === 'linkedin' && 'text-sky-600 dark:text-sky-400'
 					)}
 				>
 					{#if action.id === 'chat'}
@@ -683,7 +690,7 @@
 							<path d="M7 14h6"></path>
 							<path d="M5 19V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-4 4Z"></path>
 						</svg>
-					{:else}
+					{:else if action.id === 'cv'}
 						<svg
 							aria-hidden="true"
 							xmlns="http://www.w3.org/2000/svg"
@@ -699,6 +706,16 @@
 							<path d="M14 3v4h4"></path>
 							<path d="M9 13h6"></path>
 							<path d="M9 17h6"></path>
+						</svg>
+					{:else}
+						<svg
+							aria-hidden="true"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							class="h-4 w-4"
+						>
+							<path d="M6.94 8.5H3.56V20h3.38zm.22-5.1a1.97 1.97 0 0 0-2.03-1.9A1.96 1.96 0 0 0 3.1 3.4a1.97 1.97 0 0 0 2.03 1.92A1.98 1.98 0 0 0 7.16 3.4M20.9 12.03c0-3.44-1.83-5.04-4.28-5.04-1.97 0-2.85 1.08-3.34 1.84V8.5H9.9c.04.87 0 11.5 0 11.5h3.38v-6.42c0-.35.03-.7.13-.95.27-.7.89-1.42 1.92-1.42 1.35 0 1.9 1.03 1.9 2.54V20h3.38z"></path>
 						</svg>
 					{/if}
 				</span>

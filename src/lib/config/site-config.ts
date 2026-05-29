@@ -72,7 +72,8 @@ const siteConfig: SiteConfig = {
 			"Hi, I'm Görkem. Tell me about the project or role you have in mind, and I'll reply by email.",
 		orbitActions: [
 			{ id: 'chat', label: 'Chat' },
-			{ id: 'cv', label: 'CV' }
+			{ id: 'cv', label: 'CV' },
+			{ id: 'linkedin', label: 'LinkedIn' }
 		],
 	}
 };

@@ -1,4 +1,4 @@
-export type OrbitAction = 'chat' | 'cv';
+export type OrbitAction = 'chat' | 'cv' | 'linkedin';
 
 export type ContactLeadSourceSurface = 'chat';
 

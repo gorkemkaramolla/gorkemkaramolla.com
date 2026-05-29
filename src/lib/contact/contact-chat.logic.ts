@@ -87,7 +87,8 @@ export const curatedEmojiGroups: CuratedEmojiGroup[] = [
 
 export const orbitActionOffsets: Record<OrbitAction, { x: number; y: number; delayMs: number }> = {
 	chat: { x: -118, y: -20, delayMs: 0 },
-	cv: { x: -36, y: -146, delayMs: 45 }
+	cv: { x: -100, y: -92, delayMs: 45 },
+	linkedin: { x: -36, y: -146, delayMs: 90 }
 };
 
 export function createChatMessage(
