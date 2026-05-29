@@ -22,37 +22,37 @@ const replyBuckets: ReplyBucket[] = [
 		id: 'project',
 		keywords: ['project', 'product', 'app', 'website', 'build', 'system', 'interface'],
 		reply:
-			'If the project is worth building carefully, send the scope, the constraint that matters most, and the timeline. I will keep the next step direct.'
+			"Sounds good. Send the scope, the main constraint, and your timeline, and I'll take it from there."
 	},
 	{
 		id: 'hire',
 		keywords: ['hire', 'job', 'role', 'freelance', 'contract', 'position'],
 		reply:
-			'If this is about a role or contract, send the team stage, scope, and timing. The CV slot in orbit is turning into a downloadable PDF, but email is still the cleanest place for specifics.'
+			"Happy to talk. Tell me the team, the role, and the timing, then leave your email for the details."
 	},
 	{
 		id: 'collab',
 		keywords: ['collab', 'collaborate', 'partnership', 'together', 'team up', 'partner'],
 		reply:
-			'For collaborations, tell me what each side brings and what outcome should exist at the end. Concrete scopes move faster than vague partnerships.'
+			'Tell me what each side brings and what success looks like. A clear scope beats a vague partnership.'
 	},
 	{
 		id: 'cv',
 		keywords: ['cv', 'resume', 'experience', 'background', 'portfolio'],
 		reply:
-			'The CV action stays in the floating orbit and will become a direct PDF download. Until that is live, email is the cleanest route if you need the latest version.'
+			"I can send my latest CV by email. Leave your address and I'll forward it."
 	},
 	{
 		id: 'availability',
 		keywords: ['available', 'availability', 'start', 'timeline', 'schedule', 'capacity'],
 		reply:
-			'Availability depends on scope and start window. Leave your email with the expected timing and I can answer with a realistic next step.'
+			"It depends on the scope and start date. Leave your email with the timing and I'll give you an honest answer."
 	},
 	{
 		id: 'fallback',
 		keywords: [],
 		reply:
-			'Tell me what you are building, what outcome you want, and why now. I prefer a precise brief over a long intro.'
+			"Tell me what you're building and what you need. A few specifics go a long way."
 	}
 ];
 

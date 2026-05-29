@@ -35,7 +35,7 @@ type SiteConfig = {
 	author: string;
 	authorEmail: string;
 	authorWebsite: string;
-	authorTwitter: string;
+	// authorTwitter: string;
 	authorLinkedin: string;
 	authorGithub: string;
 	authorStackoverflow: string;
@@ -54,7 +54,7 @@ const siteConfig: SiteConfig = {
 	author: 'Görkem Karamolla',
 	authorEmail: 'gorkemkaramolla@gmail.com',
 	authorWebsite: 'https://gorkemkaramolla.com',
-	authorTwitter: 'https://twitter.com/gorkemkaramolla',
+	// authorTwitter: 'https://twitter.com/gorkemkaramolla',
 	authorLinkedin: 'https://linkedin.com/in/gorkemkaramolla',
 	authorGithub: 'https://github.com/gorkemkaramolla',
 	authorStackoverflow: 'https://stackoverflow.com/users/gorkemkaramolla',
@@ -63,13 +63,13 @@ const siteConfig: SiteConfig = {
 	footerNav: [{ label: 'Home', href: '/' }],
 	footerSocials: [
 		{ label: 'GitHub', href: 'https://github.com/gorkemkaramolla', external: true },
-		{ label: 'LinkedIn', href: 'https://linkedin.com/in/gorkemkaramolla', external: true },
-		{ label: 'Twitter/X', href: 'https://twitter.com/gorkemkaramolla', external: true }
+		{ label: 'LinkedIn', href: 'https://linkedin.com/in/gorkemkaramolla', external: true }
+		// { label: 'Twitter/X', href: 'https://twitter.com/gorkemkaramolla', external: true }
 	],
 	contactWidget: {
 		assistantName: 'Görkem Karamolla',
 		greeting:
-			'Tell me what you are building or what kind of role is on the table. I will keep the route precise and ask for email only when it is useful.',
+			"Hi, I'm Görkem. Tell me about the project or role you have in mind, and I'll reply by email.",
 		orbitActions: [
 			{ id: 'chat', label: 'Chat' },
 			{ id: 'mail', label: 'Mail' },
