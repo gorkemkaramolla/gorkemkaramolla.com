@@ -6,7 +6,7 @@
 	import BackgroundNoise from '$lib/components/layouts/background-noise.svelte';
 	import Nav from '$lib/components/layouts/top-nav.svelte';
 	import Footer from '$lib/components/layouts/footer.svelte';
-	import OrbitContactWidget from '$lib/components/layouts/orbit-contact-widget.svelte';
+	import ContactMeChat from '$lib/components/layouts/contact-me-chat.svelte';
 
 	let { children, data } = $props();
 
@@ -37,5 +37,5 @@
 		{@render children()}
 	</main>
 	<Footer />
-	<OrbitContactWidget />
+	<ContactMeChat />
 </div>
