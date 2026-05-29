@@ -14,14 +14,8 @@
 		class="container mx-auto flex flex-col gap-4 px-6 py-6 md:flex-row md:items-center md:justify-between"
 	>
 		<div class="space-y-1">
-			<p
-				class="inline-flex items-center gap-2 text-[0.68rem] font-semibold tracking-[0.2em] text-muted-foreground uppercase"
-			>
-				<span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-orange-500/80"></span>
-				Field notes by {siteConfig.author}
-			</p>
 			<p class="text-sm text-muted-foreground">
-				Reach out at
+				Send a mail to me
 				<a
 					href={mailtoHref}
 					class={`text-foreground transition hover:text-orange-500 ${focusRingClass}`}
