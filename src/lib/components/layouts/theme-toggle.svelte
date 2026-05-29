@@ -1,8 +1,9 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/button.svelte';
 	import { theme } from '$lib/stores/theme.svelte';
 </script>
 
-<button
+<Button
 	onclick={() => theme.toggle()}
 	class="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
 	aria-label={theme.resolved === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
@@ -47,4 +48,4 @@
 			<path d="m19.07 4.93-1.41 1.41" />
 		</svg>
 	{/if}
-</button>
+</Button>
