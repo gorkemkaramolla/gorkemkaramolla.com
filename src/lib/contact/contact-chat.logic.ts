@@ -71,8 +71,7 @@ export const curatedEmojiGroups: CuratedEmojiGroup[] = [
 		items: [
 			{ symbol: '💻', name: 'laptop', keywords: ['code', 'software', 'laptop'] },
 			{ symbol: '🛠️', name: 'tools', keywords: ['build', 'tools'] },
-			{ symbol: '📬', name: 'mailbox', keywords: ['mail', 'inbox', 'email'] },
-			{ symbol: '📄', name: 'document', keywords: ['cv', 'resume', 'document'] }
+				{ symbol: '📄', name: 'document', keywords: ['cv', 'resume', 'document'] }
 		]
 	},
 	{
@@ -88,8 +87,7 @@ export const curatedEmojiGroups: CuratedEmojiGroup[] = [
 
 export const orbitActionOffsets: Record<OrbitAction, { x: number; y: number; delayMs: number }> = {
 	chat: { x: -118, y: -20, delayMs: 0 },
-	mail: { x: -100, y: -92, delayMs: 45 },
-	cv: { x: -36, y: -146, delayMs: 90 }
+	cv: { x: -36, y: -146, delayMs: 45 }
 };
 
 export function createChatMessage(

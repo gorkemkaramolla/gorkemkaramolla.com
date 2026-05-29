@@ -1,6 +1,6 @@
-export type OrbitAction = 'chat' | 'mail' | 'cv';
+export type OrbitAction = 'chat' | 'cv';
 
-export type ContactLeadSourceSurface = 'chat' | 'mail_card';
+export type ContactLeadSourceSurface = 'chat';
 
 export type ChatMessageRole = 'assistant' | 'user';
 
