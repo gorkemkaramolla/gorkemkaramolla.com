@@ -71,10 +71,12 @@ const siteConfig: SiteConfig = {
 		greeting:
 			"Hi, I'm Görkem. Tell me about the project or role you have in mind, and I'll reply by email.",
 		orbitActions: [
+			{ id: 'linkedin', label: 'LinkedIn' },
+			{ id: 'github', label: 'GitHub' },
 			{ id: 'chat', label: 'Chat' },
-			{ id: 'cv', label: 'CV' },
-			{ id: 'linkedin', label: 'LinkedIn' }
+			{ id: 'cv', label: 'CV' }
 		],
+		directMailLabel: 'Email me directly'
 	}
 };
 

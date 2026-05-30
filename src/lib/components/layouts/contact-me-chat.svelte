@@ -134,6 +134,12 @@
 			isOrbitOpen = false;
 			return;
 		}
+
+		if (action === 'github') {
+			window.open(siteConfig.authorGithub, '_blank', 'noopener,noreferrer');
+			isOrbitOpen = false;
+			return;
+		}
 	}
 
 	function handleEscape(event: KeyboardEvent) {
@@ -312,11 +318,11 @@
 						<div class="min-w-0">
 							<h2
 								id="contact-chat-title"
-								class="truncate text-[0.98rem] font-semibold text-slate-900"
+								class="truncate text-[0.98rem] font-semibold text-chat-fg"
 							>
 								{siteConfig.contactWidget.assistantName}
 							</h2>
-							<p class="mt-0.5 truncate text-xs text-slate-500">{siteConfig.description}</p>
+							<p class="mt-0.5 truncate text-xs text-chat-muted">{siteConfig.description}</p>
 						</div>
 					</div>
 
@@ -327,7 +333,7 @@
 								isChatCollapsed = !isChatCollapsed;
 								isEmojiPickerOpen = false;
 							}}
-							class="orbit-chat-control orbit-chat-control--accent inline-flex h-9 w-9 items-center justify-center rounded-full transition focus-visible:ring-2 focus-visible:ring-[#1f5eff]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none"
+							class="orbit-chat-control orbit-chat-control--accent inline-flex h-9 w-9 items-center justify-center rounded-full transition focus-visible:ring-2 focus-visible:ring-chat/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none"
 							aria-label={isChatCollapsed ? 'Expand chat' : 'Shrink chat'}
 						>
 							<svg
@@ -357,7 +363,7 @@
 						<Button
 							type="button"
 							onclick={closePanels}
-							class="orbit-chat-control orbit-chat-control--danger inline-flex h-9 w-9 items-center justify-center rounded-full transition focus-visible:ring-2 focus-visible:ring-rose-400/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none"
+							class="orbit-chat-control orbit-chat-control--danger inline-flex h-9 w-9 items-center justify-center rounded-full transition focus-visible:ring-2 focus-visible:ring-chat-danger-soft/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none"
 							aria-label="Close chat"
 						>
 							<svg
@@ -391,7 +397,7 @@
 							{#if message.kind === 'system'}
 								<p
 									class={cn(
-										'mx-auto max-w-[34ch] text-center text-[0.95rem] leading-7 text-slate-500',
+										'mx-auto max-w-[34ch] text-center text-[0.95rem] leading-7 text-chat-muted',
 										isChatCollapsed ? 'pt-1' : 'pt-2'
 									)}
 								>
@@ -425,15 +431,15 @@
 
 						{#if hasPromptedForEmail || chatLeadState.status !== 'idle'}
 							<div class="orbit-chat-card rounded-[1.6rem] p-5">
-								<p class="text-sm font-semibold text-slate-900">Leave your email</p>
-								<p class="mt-1 text-sm leading-6 text-slate-500">
+								<p class="text-sm font-semibold text-chat-fg">Leave your email</p>
+								<p class="mt-1 text-sm leading-6 text-chat-muted">
 									Drop your address and I'll follow up directly.
 								</p>
 
 								{#if chatLeadState.status === 'success'}
 									<div class="orbit-chat-success mt-4 rounded-[1.3rem] p-4">
-										<p class="text-sm font-medium text-slate-900">{chatLeadState.message}</p>
-										<p class="mt-2 text-sm text-slate-500">{chatEmail}</p>
+										<p class="text-sm font-medium text-chat-fg">{chatLeadState.message}</p>
+										<p class="mt-2 text-sm text-chat-muted">{chatEmail}</p>
 									</div>
 								{:else}
 									<form
@@ -449,11 +455,11 @@
 											inputmode="email"
 											autocomplete="email"
 											placeholder="email@example.com"
-											class="orbit-chat-email-input min-w-0 flex-1 rounded-full px-4 py-3 text-sm placeholder:text-slate-400 focus:border-[#1f5eff] focus:ring-2 focus:ring-[#1f5eff]/15"
+											class="orbit-chat-email-input min-w-0 flex-1 rounded-full px-4 py-3 text-sm placeholder:text-chat-faint focus:border-chat focus:ring-2 focus:ring-chat/15"
 										/>
 										<Button
 											type="submit"
-											class="orbit-chat-primary-button inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-[#1f5eff]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+											class="orbit-chat-primary-button inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-chat/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
 											disabled={chatLeadState.status === 'submitting'}
 										>
 											{chatLeadState.status === 'submitting' ? 'Saving...' : 'Notify me'}
@@ -461,7 +467,7 @@
 									</form>
 
 									{#if chatLeadState.status === 'error'}
-										<p class="mt-3 text-sm text-rose-500">{chatLeadState.message}</p>
+										<p class="mt-3 text-sm text-chat-danger">{chatLeadState.message}</p>
 									{/if}
 								{/if}
 							</div>
@@ -489,7 +495,7 @@
 								rows="2"
 								placeholder="Message..."
 								class={cn(
-									'orbit-chat-textarea w-full resize-none border-0 bg-transparent px-1 py-1 text-[0.95rem] leading-6 placeholder:text-slate-400 focus:ring-0',
+									'orbit-chat-textarea w-full resize-none border-0 bg-transparent px-1 py-1 text-[0.95rem] leading-6 placeholder:text-chat-faint focus:ring-0',
 									isChatCollapsed ? 'min-h-[4.75rem]' : 'min-h-[5.75rem]'
 								)}
 							></textarea>
@@ -501,7 +507,7 @@
 										onclick={() => {
 											isEmojiPickerOpen = !isEmojiPickerOpen;
 										}}
-										class="orbit-chat-action-button inline-flex h-9 w-9 items-center justify-center rounded-full transition focus-visible:ring-2 focus-visible:ring-[#1f5eff]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none"
+										class="orbit-chat-action-button inline-flex h-9 w-9 items-center justify-center rounded-full transition focus-visible:ring-2 focus-visible:ring-chat/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none"
 										aria-label="Toggle emoji picker"
 										aria-expanded={isEmojiPickerOpen}
 									>
@@ -531,7 +537,7 @@
 												bind:value={emojiSearch}
 												type="search"
 												placeholder="Search emoji..."
-												class="orbit-emoji-search w-full rounded-full px-4 py-2 text-sm placeholder:text-slate-400 focus:border-[#1f5eff] focus:ring-2 focus:ring-[#1f5eff]/20"
+												class="orbit-emoji-search w-full rounded-full px-4 py-2 text-sm placeholder:text-chat-faint focus:border-chat focus:ring-2 focus:ring-chat/20"
 											/>
 
 											<div class="mt-3 max-h-56 space-y-3 overflow-y-auto pr-1">
@@ -567,7 +573,7 @@
 
 								<Button
 									type="submit"
-									class="orbit-chat-send-button inline-flex h-11 w-11 items-center justify-center rounded-full transition focus-visible:ring-2 focus-visible:ring-[#1f5eff]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none disabled:cursor-not-allowed"
+									class="orbit-chat-send-button inline-flex h-11 w-11 items-center justify-center rounded-full transition focus-visible:ring-2 focus-visible:ring-chat/35 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none disabled:cursor-not-allowed"
 									disabled={composerValue.trim().length === 0 || isReplying}
 									aria-label="Send message"
 								>
@@ -601,7 +607,7 @@
 			>
 				<div class="flex items-start justify-between gap-4">
 					<div>
-						<p class="text-[0.65rem] font-semibold tracking-[0.24em] text-orange-500/80 uppercase">
+						<p class="text-[0.65rem] font-semibold tracking-[0.24em] text-brand/80 uppercase">
 							CV PDF
 						</p>
 						<p class="mt-2 text-sm leading-7 text-muted-foreground">
@@ -612,7 +618,7 @@
 					<Button
 						type="button"
 						onclick={closePanels}
-						class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/70 bg-background/55 text-muted-foreground transition hover:border-orange-500/35 hover:text-foreground focus-visible:ring-2 focus-visible:ring-orange-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+						class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/70 bg-background/55 text-muted-foreground transition hover:border-brand/35 hover:text-foreground focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
 						aria-label="Close CV card"
 					>
 						<svg
@@ -657,7 +663,7 @@
 				type="button"
 				onclick={() => void handleOrbitAction(action.id)}
 				class={cn(
-					`pointer-events-auto absolute right-1 bottom-1 inline-flex origin-bottom-right items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-foreground ${orbitButtonClass} transition-[transform,opacity,border-color] duration-300 ease-out focus-visible:ring-2 focus-visible:ring-orange-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none`,
+					`pointer-events-auto absolute right-1 bottom-1 inline-flex origin-bottom-right items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-foreground ${orbitButtonClass} transition-[transform,opacity,border-color] duration-300 ease-out focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none`,
 					isOrbitOpen && !activeSurface
 						? 'translate-x-0 translate-y-0 opacity-100'
 						: 'pointer-events-none translate-x-0 translate-y-0 opacity-0'
@@ -669,9 +675,10 @@
 				<span
 					class={cn(
 						'inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/70 bg-background/60 text-muted-foreground',
-						action.id === 'chat' && 'text-orange-600 dark:text-orange-400',
+						action.id === 'chat' && 'text-brand-strong dark:text-brand-soft',
 						action.id === 'cv' && 'text-emerald-600 dark:text-emerald-300',
-						action.id === 'linkedin' && 'text-sky-600 dark:text-sky-400'
+						action.id === 'linkedin' && 'text-sky-600 dark:text-sky-400',
+						action.id === 'github' && 'text-violet-600 dark:text-violet-400'
 					)}
 				>
 					{#if action.id === 'chat'}
@@ -707,7 +714,7 @@
 							<path d="M9 13h6"></path>
 							<path d="M9 17h6"></path>
 						</svg>
-					{:else}
+					{:else if action.id === 'linkedin'}
 						<svg
 							aria-hidden="true"
 							xmlns="http://www.w3.org/2000/svg"
@@ -716,6 +723,16 @@
 							class="h-4 w-4"
 						>
 							<path d="M6.94 8.5H3.56V20h3.38zm.22-5.1a1.97 1.97 0 0 0-2.03-1.9A1.96 1.96 0 0 0 3.1 3.4a1.97 1.97 0 0 0 2.03 1.92A1.98 1.98 0 0 0 7.16 3.4M20.9 12.03c0-3.44-1.83-5.04-4.28-5.04-1.97 0-2.85 1.08-3.34 1.84V8.5H9.9c.04.87 0 11.5 0 11.5h3.38v-6.42c0-.35.03-.7.13-.95.27-.7.89-1.42 1.92-1.42 1.35 0 1.9 1.03 1.9 2.54V20h3.38z"></path>
+						</svg>
+					{:else}
+						<svg
+							aria-hidden="true"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							class="h-4 w-4"
+						>
+							<path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"></path>
 						</svg>
 					{/if}
 				</span>
@@ -726,13 +743,13 @@
 		<Button
 			type="button"
 			onclick={handlePrimaryAction}
-			class={`pointer-events-auto relative inline-flex h-16 w-16 items-center justify-center rounded-full text-foreground ${mainFabClass} transition hover:border-orange-500/35 hover:text-orange-600 focus-visible:ring-2 focus-visible:ring-orange-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none dark:hover:text-orange-400`}
+			class={`pointer-events-auto relative inline-flex h-16 w-16 items-center justify-center rounded-full text-foreground ${mainFabClass} transition hover:border-brand/35 hover:text-brand-strong focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none dark:hover:text-brand-soft`}
 			aria-label={isPrimaryFabActive ? 'Close contact controls' : 'Open contact controls'}
 			aria-expanded={isOrbitOpen}
 		>
 			<span class="absolute inset-1 rounded-full border border-black/8 dark:border-white/8"></span>
 			<span
-				class="absolute h-9 w-9 rounded-full border border-orange-500/16 bg-orange-500/6 blur-sm"
+				class="absolute h-9 w-9 rounded-full border border-brand/16 bg-brand/6 blur-sm"
 			></span>
 			<span
 				class={cn(
@@ -781,7 +798,7 @@
 
 	.orbit-surface--panel {
 		background:
-			radial-gradient(circle at top, rgb(249 115 22 / 0.11), transparent 52%),
+			radial-gradient(circle at top, color-mix(in srgb, var(--color-brand) 11%, transparent), transparent 52%),
 			linear-gradient(180deg, rgb(255 255 255 / 0.94), rgb(244 246 251 / 0.98));
 		box-shadow: 0 28px 90px rgb(148 163 184 / 0.24);
 	}
@@ -856,7 +873,7 @@
 	.orbit-chat-panel {
 		border: 1px solid rgb(225 229 238 / 0.94);
 		background:
-			radial-gradient(circle at top right, rgb(31 94 255 / 0.06), transparent 30%),
+			radial-gradient(circle at top right, color-mix(in srgb, var(--color-chat) 6%, transparent), transparent 30%),
 			linear-gradient(180deg, rgb(255 255 255 / 0.99), rgb(249 250 252 / 0.98));
 		box-shadow: 0 36px 120px rgb(15 23 42 / 0.2);
 	}
@@ -873,8 +890,8 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 9999px;
-		background: linear-gradient(135deg, rgb(54 150 255), rgb(31 94 255));
-		box-shadow: 0 10px 24px rgb(31 94 255 / 0.18);
+		background: linear-gradient(135deg, var(--color-chat-bright), var(--color-chat));
+		box-shadow: 0 10px 24px color-mix(in srgb, var(--color-chat) 18%, transparent);
 		color: white;
 		font-size: 0.72rem;
 		font-weight: 700;
@@ -906,8 +923,8 @@
 	.orbit-chat-control--accent:hover {
 		border-color: rgb(147 197 253);
 		background: rgb(239 246 255);
-		color: rgb(37 99 235);
-		box-shadow: 0 10px 26px rgb(31 94 255 / 0.18);
+		color: var(--color-chat-ink);
+		box-shadow: 0 10px 26px color-mix(in srgb, var(--color-chat) 18%, transparent);
 		transform: translateY(-1px);
 	}
 
@@ -941,8 +958,8 @@
 	}
 
 	.orbit-chat-user-bubble {
-		background: linear-gradient(180deg, rgb(31 94 255), rgb(22 78 247));
-		box-shadow: 0 18px 40px rgb(31 94 255 / 0.24);
+		background: linear-gradient(180deg, var(--color-chat), var(--color-chat-deep));
+		box-shadow: 0 18px 40px color-mix(in srgb, var(--color-chat) 24%, transparent);
 		color: white;
 	}
 
@@ -975,7 +992,7 @@
 	}
 
 	.orbit-chat-composer {
-		border: 2px solid rgb(36 99 235);
+		border: 2px solid var(--color-chat-ink);
 		background: white;
 		box-shadow: 0 18px 46px rgb(59 130 246 / 0.08);
 	}
@@ -993,12 +1010,12 @@
 	.orbit-chat-action-button:hover {
 		border-color: rgb(191 219 254);
 		background: rgb(239 246 255);
-		color: rgb(37 99 235);
+		color: var(--color-chat-ink);
 	}
 
 	.orbit-chat-send-button {
-		background: linear-gradient(180deg, rgb(31 94 255), rgb(22 78 247));
-		box-shadow: 0 18px 36px rgb(31 94 255 / 0.24);
+		background: linear-gradient(180deg, var(--color-chat), var(--color-chat-deep));
+		box-shadow: 0 18px 36px color-mix(in srgb, var(--color-chat) 24%, transparent);
 		color: white;
 	}
 
@@ -1052,7 +1069,7 @@
 
 	:global(.dark) .orbit-surface--panel {
 		background:
-			radial-gradient(circle at top, rgb(249 115 22 / 0.12), transparent 52%),
+			radial-gradient(circle at top, color-mix(in srgb, var(--color-brand) 12%, transparent), transparent 52%),
 			linear-gradient(180deg, rgb(10 12 20 / 0.96), rgb(4 5 10 / 0.96));
 		box-shadow: 0 28px 90px rgb(0 0 0 / 0.48);
 	}

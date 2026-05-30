@@ -4,8 +4,8 @@
 
 	const currentYear = new Date().getFullYear();
 	const focusRingClass =
-		'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background';
-	const chipClass = `inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/55 px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground transition hover:border-orange-500/35 hover:text-foreground ${focusRingClass}`;
+		'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background';
+	const chipClass = `inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/55 px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground transition hover:border-brand/35 hover:text-foreground ${focusRingClass}`;
 	const mailtoHref = `mailto:${siteConfig.authorEmail}`;
 </script>
 
@@ -18,7 +18,7 @@
 				Send a mail to me
 				<a
 					href={mailtoHref}
-					class={`text-foreground transition hover:text-orange-500 ${focusRingClass}`}
+					class={`text-foreground transition hover:text-brand ${focusRingClass}`}
 				>
 					{siteConfig.authorEmail}
 				</a>

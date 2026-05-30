@@ -26,6 +26,12 @@
 		className?: string;
 		pointerInteractive?: boolean;
 		pointerMode?: PointerMode;
+		waveAmplitude?: number;
+		waveFrequency?: number;
+		waveSpeed?: number;
+		removeLightBackground?: boolean;
+		lightBackgroundThreshold?: number;
+		lightBackgroundChroma?: number;
 	}
 
 	let {
@@ -47,7 +53,13 @@
 		animationSpeed = 0.02,
 		className = '',
 		pointerInteractive = true,
-		pointerMode = 'warp'
+		pointerMode = 'warp',
+		waveAmplitude = 0,
+		waveFrequency = 6,
+		waveSpeed = 1,
+		removeLightBackground = false,
+		lightBackgroundThreshold = 222,
+		lightBackgroundChroma = 36
 	}: Props = $props();
 
 	const BAYER_MATRIX_4X4 = [
@@ -78,7 +90,7 @@
 	let dimensions = { width: 0, height: 0 };
 	let pointer = { x: 0.5, y: 0.5, active: false };
 	const settingsKey = $derived(
-		`${gridSize}-${ditherMode}-${colorMode}-${invert}-${pixelRatio}-${primaryColor}-${secondaryColor}-${customPalette.join('|')}-${brightness}-${contrast}-${backgroundColor}-${objectFit}-${threshold}-${animated}-${animationSpeed}`
+		`${gridSize}-${ditherMode}-${colorMode}-${invert}-${pixelRatio}-${primaryColor}-${secondaryColor}-${customPalette.join('|')}-${brightness}-${contrast}-${backgroundColor}-${objectFit}-${threshold}-${animated}-${animationSpeed}-${waveAmplitude}-${waveFrequency}-${waveSpeed}-${removeLightBackground}-${lightBackgroundThreshold}-${lightBackgroundChroma}`
 	);
 
 	function parseColor(color: string): [number, number, number] {
@@ -98,7 +110,8 @@
 			];
 		}
 		const match = color.match(/rgb\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)\)/i);
-		if (match) return [Number.parseInt(match[1]), Number.parseInt(match[2]), Number.parseInt(match[3])];
+		if (match)
+			return [Number.parseInt(match[1]), Number.parseInt(match[2]), Number.parseInt(match[3])];
 		return [0, 0, 0];
 	}
 
@@ -108,6 +121,94 @@
 
 	function getLuminance(r: number, g: number, b: number): number {
 		return 0.299 * r + 0.587 * g + 0.114 * b;
+	}
+
+	function isConnectedBackdropPixel(data: Uint8ClampedArray, idx: number): boolean {
+		if (data[idx + 3] < 10) return false;
+		const r = data[idx] || 0;
+		const g = data[idx + 1] || 0;
+		const b = data[idx + 2] || 0;
+		const maxChannel = Math.max(r, g, b);
+		const minChannel = Math.min(r, g, b);
+
+		return (
+			getLuminance(r, g, b) >= lightBackgroundThreshold &&
+			maxChannel - minChannel <= lightBackgroundChroma
+		);
+	}
+
+	function knockOutConnectedLightBackground(source: ImageData) {
+		const { data, width, height } = source;
+		const visited = new Uint8Array(width * height);
+		const stack: number[] = [];
+
+		const enqueue = (x: number, y: number) => {
+			if (x < 0 || x >= width || y < 0 || y >= height) return;
+			const point = y * width + x;
+			if (visited[point]) return;
+			if (!isConnectedBackdropPixel(data, point * 4)) return;
+			visited[point] = 1;
+			stack.push(point);
+		};
+
+		for (let x = 0; x < width; x += 1) {
+			enqueue(x, 0);
+		}
+
+		for (let y = 0; y < height; y += 1) {
+			enqueue(0, y);
+			enqueue(width - 1, y);
+		}
+
+		while (stack.length > 0) {
+			const point = stack.pop();
+			if (point === undefined) continue;
+			const x = point % width;
+			const y = Math.floor(point / width);
+			data[point * 4 + 3] = 0;
+
+			enqueue(x + 1, y);
+			enqueue(x - 1, y);
+			enqueue(x, y + 1);
+			enqueue(x, y - 1);
+		}
+
+		for (let point = 0; point < visited.length; point += 1) {
+			if (visited[point]) continue;
+
+			const x = point % width;
+			const y = Math.floor(point / width);
+			let nearBackdrop = false;
+
+			for (let oy = -1; oy <= 1 && !nearBackdrop; oy += 1) {
+				for (let ox = -1; ox <= 1; ox += 1) {
+					if (ox === 0 && oy === 0) continue;
+					const nx = x + ox;
+					const ny = y + oy;
+					if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
+					if (visited[ny * width + nx]) {
+						nearBackdrop = true;
+						break;
+					}
+				}
+			}
+
+			if (!nearBackdrop) continue;
+
+			const idx = point * 4;
+			const r = data[idx] || 0;
+			const g = data[idx + 1] || 0;
+			const b = data[idx + 2] || 0;
+			const maxChannel = Math.max(r, g, b);
+			const minChannel = Math.min(r, g, b);
+			const isSoftBackdropEdge =
+				getLuminance(r, g, b) >= lightBackgroundThreshold - 36 &&
+				maxChannel - minChannel <= lightBackgroundChroma + 24;
+
+			if (isSoftBackdropEdge) {
+				data[idx + 3] = Math.min(data[idx + 3] || 255, 96);
+			}
+		}
 	}
 
 	function applyDithering(
@@ -143,14 +244,27 @@
 				const ny = y / displayHeight;
 				const dist = Math.hypot(nx - pointer.x, ny - pointer.y);
 				const influence = pointerInteractive && pointer.active ? Math.max(0, 1 - dist * 2.4) : 0;
-				const panX = pointerInteractive && pointer.active ? (pointer.x - 0.5) * sourceWidth * 0.03 : 0;
-				const panY = pointerInteractive && pointer.active ? (pointer.y - 0.5) * sourceHeight * 0.03 : 0;
+				const panX =
+					pointerInteractive && pointer.active ? (pointer.x - 0.5) * sourceWidth * 0.03 : 0;
+				const panY =
+					pointerInteractive && pointer.active ? (pointer.y - 0.5) * sourceHeight * 0.03 : 0;
 				const warpX = nx + (pointer.x - 0.5) * 0.06 * influence;
 				const warpY = ny + (pointer.y - 0.5) * 0.06 * influence;
-				const mappedX =
-					pointerMode === 'pan' ? (x / displayWidth) * sourceWidth + panX : clamp(warpX, 0, 1) * sourceWidth;
-				const mappedY =
-					pointerMode === 'pan' ? (y / displayHeight) * sourceHeight + panY : clamp(warpY, 0, 1) * sourceHeight;
+				let mappedX =
+					pointerMode === 'pan'
+						? (x / displayWidth) * sourceWidth + panX
+						: clamp(warpX, 0, 1) * sourceWidth;
+				let mappedY =
+					pointerMode === 'pan'
+						? (y / displayHeight) * sourceHeight + panY
+						: clamp(warpY, 0, 1) * sourceHeight;
+
+				// Slow wavy displacement: offset the sampled pixel along a travelling sine wave.
+				if (waveAmplitude > 0) {
+					mappedX += Math.sin(ny * waveFrequency + frameTime * waveSpeed) * waveAmplitude;
+					mappedY += Math.cos(nx * waveFrequency + frameTime * waveSpeed * 0.8) * waveAmplitude;
+				}
+
 				const srcX = Math.floor(clamp(mappedX, 0, sourceWidth - 1));
 				const srcY = Math.floor(clamp(mappedY, 0, sourceHeight - 1));
 				const srcIdx = (srcY * sourceWidth + srcX) * 4;
@@ -238,7 +352,10 @@
 					outputColor = [255 - outputColor[0], 255 - outputColor[1], 255 - outputColor[2]];
 				}
 
-				ctx.fillStyle = `rgb(${outputColor[0]}, ${outputColor[1]}, ${outputColor[2]})`;
+				ctx.fillStyle =
+					a >= 250
+						? `rgb(${outputColor[0]}, ${outputColor[1]}, ${outputColor[2]})`
+						: `rgba(${outputColor[0]}, ${outputColor[1]}, ${outputColor[2]}, ${(a / 255).toFixed(3)})`;
 				ctx.fillRect(x, y, effectivePixelSize, effectivePixelSize);
 			}
 		}
@@ -321,6 +438,9 @@
 
 		try {
 			imageData = offCtx.getImageData(0, 0, displayWidth, displayHeight);
+			if (removeLightBackground) {
+				knockOutConnectedLightBackground(imageData);
+			}
 		} catch {
 			console.error('Could not get image data. CORS issue?');
 			return;
@@ -388,7 +508,10 @@
 	});
 </script>
 
-<div bind:this={containerEl} class={cn('relative h-full w-full overflow-hidden rounded-2xl', className)}>
+<div
+	bind:this={containerEl}
+	class={cn('relative h-full w-full overflow-hidden rounded-2xl', className)}
+>
 	<canvas
 		bind:this={canvasEl}
 		class="absolute inset-0 h-full w-full"

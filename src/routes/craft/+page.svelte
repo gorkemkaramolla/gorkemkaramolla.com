@@ -29,7 +29,7 @@
 				},
 				{
 					type: 'image',
-					src: '/assets/seaside.jpeg',
+					src: '/assets/gorkemkaramolla.jpeg',
 					alt: 'Silhouette by the seaside at dusk'
 				}
 			],
@@ -80,7 +80,7 @@
 <div class="mx-auto flex w-full max-w-[86rem] flex-col gap-12 pt-4 pb-16 md:gap-16">
 	<section class="space-y-7">
 		<div class="space-y-3">
-			<p class="text-[0.72rem] font-semibold tracking-[0.3em] text-orange-500/85 uppercase">
+			<p class="text-[0.72rem] font-semibold tracking-[0.3em] text-brand/85 uppercase">
 				Craft
 			</p>
 			<h1

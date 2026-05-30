@@ -5,7 +5,7 @@
 /* 1. Define HSL variables for Light and Dark modes */
 @layer base {
 	:root {
-		--background: 0 0% 100%;
+		--background: 210 40% 98.5%;
 		--foreground: 222.2 84% 4.9%;
 
 		--primary: 222.2 47.4% 11.2%;
@@ -31,7 +31,7 @@
 	}
 
 	.dark {
-		--background: 0 0% 0%;
+		--background: 1 0% 4%;
 		--foreground: 210 40% 98%;
 
 		--primary: 210 40% 98%;
@@ -79,6 +79,26 @@
 	--color-input: hsl(var(--input));
 	--color-ring: hsl(var(--ring));
 
+	/* Brand accent (was orange-500/600/400) */
+	--color-brand: #6fcf97; /* orange-500 — primary accent */
+	--color-brand-strong: #3333ff; /* orange-600 — chat icon, FAB hover (light) */
+	--color-brand-soft: #3333ff; /* orange-400 — FAB hover (dark) */
+
+	/* Chat widget blue (was #1f5eff family) */
+	--color-chat: #1f5eff; /* primary chat blue */
+	--color-chat-deep: #164ef7; /* gradient bottom (rgb 22 78 247) */
+	--color-chat-bright: #3696ff; /* gradient top (rgb 54 150 255) */
+	--color-chat-ink: #2563eb; /* hover ink (rgb 37 99 235) */
+
+	/* Chat neutral text (was slate-900/500/400) */
+	--color-chat-fg: #0f172a; /* slate-900 */
+	--color-chat-muted: #64748b; /* slate-500 */
+	--color-chat-faint: #94a3b8; /* slate-400 */
+
+	/* Danger accent in chat (was rose-500/400) */
+	--color-chat-danger: #f43f5e; /* rose-500 */
+	--color-chat-danger-soft: #fb7185; /* rose-400 */
+
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
@@ -104,7 +124,7 @@
 	}
 
 	::selection {
-		background: rgb(249 115 22 / 0.3);
+		background: color-mix(in srgb, var(--color-brand) 30%, transparent);
 		color: var(--color-foreground);
 	}
 }

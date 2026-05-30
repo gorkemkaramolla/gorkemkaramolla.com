@@ -258,13 +258,13 @@
 				></div>
 				<div
 					aria-hidden="true"
-					class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-500/70 to-transparent"
+					class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/70 to-transparent"
 				></div>
 				<div class="relative flex h-full flex-col justify-between gap-6 p-5 md:p-6">
 					<div class="space-y-4">
 						{#if panel.eyebrow}
 							<p
-								class="text-[0.68rem] font-semibold tracking-[0.24em] text-orange-500/85 uppercase"
+								class="text-[0.68rem] font-semibold tracking-[0.24em] text-brand/85 uppercase"
 							>
 								{panel.eyebrow}
 							</p>

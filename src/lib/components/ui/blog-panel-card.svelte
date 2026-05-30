@@ -18,6 +18,11 @@
 
 	let { post, index, className = '' }: Props = $props();
 
+	// Hover swaps the dither duotone toward the brand accent.
+	let hovered = $state(false);
+	const primaryColor = $derived(hovered ? '#0a0a0a' : '#161a1e');
+	const secondaryColor = $derived(hovered ? '#3333ff' : '#d2d7dd');
+
 	const KB_DIRECTIONS = ['kenburns-nw', 'kenburns-ne', 'kenburns-sw', 'kenburns-se'] as const;
 	const kbClass = KB_DIRECTIONS[index % KB_DIRECTIONS.length];
 
@@ -35,9 +40,11 @@
 <a
 	href={`/blog/${post.slug}`}
 	class={cn(
-		'group relative flex flex-col overflow-hidden rounded-[1.6rem] border border-border/70 bg-background/45 backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:border-orange-500/28 hover:bg-background/60',
+		'group relative flex flex-col overflow-hidden rounded-[1.6rem] border border-border/70 bg-background/45 backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:border-brand/28 hover:bg-background/60',
 		className
 	)}
+	onmouseenter={() => (hovered = true)}
+	onmouseleave={() => (hovered = false)}
 >
 	<!-- Dithered image with Ken Burns -->
 	<div class="relative aspect-video w-full overflow-hidden">
@@ -53,8 +60,8 @@
 				pointerMode="pan"
 				gridSize={1}
 				colorMode="duotone"
-				primaryColor="#161a1e"
-				secondaryColor="#d2d7dd"
+				{primaryColor}
+				{secondaryColor}
 				contrast={1.12}
 				brightness={-0.03}
 				threshold={0.5}
@@ -68,7 +75,7 @@
 		<!-- Orange accent line at bottom of image -->
 		<div
 			aria-hidden="true"
-			class="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-orange-500/60 to-transparent"
+			class="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-brand/60 to-transparent"
 		></div>
 	</div>
 
@@ -79,7 +86,7 @@
 		</p>
 
 		<h3
-			class="max-w-[19ch] text-2xl font-semibold tracking-[-0.05em] text-foreground transition-colors group-hover:text-orange-500"
+			class="max-w-[19ch] text-2xl font-semibold tracking-[-0.05em] text-foreground transition-colors group-hover:text-brand"
 		>
 			{post.title}
 		</h3>

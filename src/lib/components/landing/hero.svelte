@@ -1,0 +1,263 @@
+<script lang="ts">
+	import DitherShader from '$lib/components/ui/dither-shader.svelte';
+	import { siteConfig } from '$lib/config/site-config';
+	import { landingContent } from '$lib/config/landing-content';
+
+	const { hero } = landingContent;
+
+	const socials = [
+		{ label: 'GitHub', href: siteConfig.authorGithub, icon: 'github' },
+		{ label: 'LinkedIn', href: siteConfig.authorLinkedin, icon: 'linkedin' },
+		{ label: 'Stack Overflow', href: siteConfig.authorStackoverflow, icon: 'stackoverflow' }
+	] as const;
+</script>
+
+<section class="hero-shell relative isolate" aria-label="Intro">
+	<div class="hero-atmosphere" aria-hidden="true"></div>
+	<div class="hero-portrait" aria-hidden="true">
+		<DitherShader
+			src="/assets/gorkemkaramolla.jpeg"
+			gridSize={3}
+			ditherMode="bayer"
+			colorMode="duotone"
+			primaryColor="#080b0f"
+			secondaryColor="#6FCF97"
+			contrast={1.18}
+			objectFit="contain"
+			pointerInteractive={false}
+			animated={true}
+			animationSpeed={0.012}
+			waveAmplitude={5}
+			waveFrequency={5}
+			waveSpeed={1}
+			removeLightBackground={true}
+			lightBackgroundThreshold={218}
+			lightBackgroundChroma={42}
+			className="h-full w-full rounded-none"
+		/>
+	</div>
+	<div class="hero-content-scrim" aria-hidden="true"></div>
+
+	<!-- Foreground content -->
+	<div class="relative z-10 flex min-h-[86vh] max-w-2xl flex-col justify-center gap-7 py-20">
+		<!-- Availability chip -->
+		<div
+			class="inline-flex w-fit items-center gap-2.5 rounded-full border border-border/70 bg-background/55 px-3.5 py-1.5 text-[0.7rem] font-semibold tracking-[0.18em] text-muted-foreground uppercase backdrop-blur-xl"
+		>
+			<span class="relative flex h-2 w-2">
+				<span
+					class="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand/70 motion-reduce:hidden"
+				></span>
+				<span class="relative inline-flex h-2 w-2 rounded-full bg-brand"></span>
+			</span>
+			{hero.availability}
+			<span aria-hidden="true" class="text-muted-foreground/50">·</span>
+			<span class="font-medium tracking-[0.12em] normal-case">{hero.location}</span>
+		</div>
+
+		<div class="space-y-5">
+			<p
+				class="flex items-center gap-3 text-base font-semibold tracking-[0.18em] text-brand uppercase sm:text-lg"
+			>
+				<span aria-hidden="true" class="h-0.5 w-9 rounded-full bg-brand/70"></span>
+				{hero.eyebrow}
+			</p>
+			<h1
+				class="text-4xl font-semibold tracking-[-0.06em] text-balance text-foreground sm:text-5xl lg:text-6xl"
+			>
+				{hero.headlineLead}
+				<span class="text-brand">{hero.headlineAccent}</span>
+				{hero.headlineTail}
+			</h1>
+			<p class="max-w-xl text-base leading-8 text-pretty text-muted-foreground sm:text-lg">
+				{hero.subhead}
+			</p>
+		</div>
+
+		<!-- CTAs -->
+		<div class="flex flex-wrap items-center gap-3">
+			<a
+				href={hero.primaryCta.href}
+				class="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_30px_-10px] shadow-brand/60 transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+			>
+				{hero.primaryCta.label}
+				<svg
+					aria-hidden="true"
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.9"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="h-4 w-4"
+				>
+					<path d="M5 12h14"></path>
+					<path d="m13 5 7 7-7 7"></path>
+				</svg>
+			</a>
+			<a
+				href={hero.secondaryCta.href}
+				class="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/55 px-5 py-2.5 text-sm font-semibold text-foreground backdrop-blur-xl transition hover:border-brand/35 hover:text-brand focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+			>
+				{hero.secondaryCta.label}
+			</a>
+		</div>
+
+		<!-- Social links -->
+		<div class="flex items-center gap-2.5 pt-1">
+			{#each socials as social (social.label)}
+				<a
+					href={social.href}
+					target="_blank"
+					rel="noreferrer noopener"
+					aria-label={social.label}
+					title={social.label}
+					class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-background/55 text-muted-foreground backdrop-blur-xl transition hover:border-brand/35 hover:text-brand focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+				>
+					{#if social.icon === 'github'}
+						<svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true">
+							<path
+								d="M12 .5C5.73.5.5 5.74.5 12.02c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.16-.02-2.1-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.26-1.28-5.26-5.71 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 2.9-.39c.98 0 1.97.13 2.9.39 2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.44-2.71 5.42-5.28 5.7.41.36.78 1.07.78 2.16 0 1.56-.01 2.82-.01 3.2 0 .31.21.68.8.56A11.53 11.53 0 0 0 23.5 12.02C23.5 5.74 18.27.5 12 .5Z"
+							></path>
+						</svg>
+					{:else if social.icon === 'linkedin'}
+						<svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true">
+							<path
+								d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29ZM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"
+							></path>
+						</svg>
+					{:else}
+						<svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true">
+							<path
+								d="M17.36 20.2v-5.38h1.79V22H3v-7.18h1.8v5.38h12.56ZM6.77 14.32l.37-1.76 8.79 1.85-.37 1.76-8.79-1.85Zm1.16-4.21.76-1.61 8.14 3.79-.76 1.62-8.14-3.8Zm2.26-3.99 1.15-1.38 6.9 5.76-1.15 1.37-6.9-5.75ZM14.65 2l5.35 7.22-1.45 1.07-5.35-7.22L14.65 2ZM6.59 18.41v-1.8h8.95v1.8H6.59Z"
+							></path>
+						</svg>
+					{/if}
+				</a>
+			{/each}
+		</div>
+	</div>
+</section>
+
+<style>
+	.hero-atmosphere,
+	.hero-content-scrim,
+	.hero-portrait {
+		pointer-events: none;
+		position: absolute;
+	}
+
+	.hero-atmosphere {
+		inset: 0 calc(50% - 50vw);
+		z-index: 0;
+		background:
+			radial-gradient(
+				ellipse 46rem 40rem at 78% 42%,
+				color-mix(in srgb, var(--color-brand) 29%, white 71%) 0%,
+				color-mix(in srgb, var(--color-brand) 19%, transparent) 42%,
+				transparent 76%
+			),
+			radial-gradient(ellipse 34rem 28rem at 18% 78%, rgba(79, 70, 229, 0.075) 0%, transparent 68%),
+			linear-gradient(
+				102deg,
+				transparent 0%,
+				transparent 37%,
+				color-mix(in srgb, var(--color-brand) 8%, transparent) 62%,
+				color-mix(in srgb, var(--color-brand) 16%, transparent) 100%
+			);
+	}
+
+	.hero-atmosphere::after {
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(rgba(8, 11, 15, 0.08) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(8, 11, 15, 0.08) 1px, transparent 1px);
+		background-position: right center;
+		background-size: 3px 3px;
+		content: '';
+		opacity: 0.12;
+	}
+
+	.hero-portrait {
+		top: clamp(0.5rem, 2vh, 1.75rem);
+		right: clamp(-1.5rem, -1.5vw, -0.5rem);
+		bottom: 0;
+		z-index: 1;
+		width: min(48vw, 43rem);
+		opacity: 0.96;
+	}
+
+	.hero-content-scrim {
+		inset: 0 calc(50% - 50vw);
+		z-index: 2;
+		background: linear-gradient(
+			90deg,
+			var(--color-background) 0%,
+			color-mix(in srgb, var(--color-background) 94%, transparent) 35%,
+			color-mix(in srgb, var(--color-background) 50%, transparent) 53%,
+			transparent 74%
+		);
+	}
+
+	:global(.dark) .hero-atmosphere {
+		background:
+			radial-gradient(
+				ellipse 48rem 42rem at 78% 42%,
+				rgba(111, 207, 151, 0.22) 0%,
+				rgba(111, 207, 151, 0.08) 42%,
+				transparent 76%
+			),
+			radial-gradient(ellipse 34rem 28rem at 18% 78%, rgba(79, 70, 229, 0.12) 0%, transparent 68%),
+			linear-gradient(
+				102deg,
+				transparent 0%,
+				transparent 38%,
+				rgba(111, 207, 151, 0.035) 62%,
+				rgba(9, 34, 23, 0.38) 100%
+			);
+	}
+
+	:global(.dark) .hero-atmosphere::after {
+		background-image:
+			linear-gradient(rgba(111, 207, 151, 0.16) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(111, 207, 151, 0.16) 1px, transparent 1px);
+		opacity: 0.16;
+	}
+
+	:global(.dark) .hero-content-scrim {
+		background: linear-gradient(
+			90deg,
+			var(--color-background) 0%,
+			color-mix(in srgb, var(--color-background) 94%, transparent) 36%,
+			color-mix(in srgb, var(--color-background) 54%, transparent) 54%,
+			transparent 75%
+		);
+	}
+
+	@media (max-width: 767px) {
+		.hero-atmosphere {
+			inset-block: 0;
+		}
+
+		.hero-portrait {
+			top: 10rem;
+			right: -47vw;
+			bottom: 1.5rem;
+			width: 116vw;
+			height: auto;
+			opacity: 0.28;
+		}
+
+		.hero-content-scrim,
+		:global(.dark) .hero-content-scrim {
+			background: linear-gradient(
+				180deg,
+				color-mix(in srgb, var(--color-background) 86%, transparent) 0%,
+				color-mix(in srgb, var(--color-background) 68%, transparent) 46%,
+				var(--color-background) 100%
+			);
+		}
+	}
+</style>
