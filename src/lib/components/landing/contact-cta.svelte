@@ -39,7 +39,7 @@
 		<div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
 			<a
 				href={mailtoHref}
-				class="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_30px_-10px] shadow-brand/60 transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+				class="inline-flex max-w-full items-center gap-2 rounded-full bg-brand px-5 py-3 text-xs font-semibold break-all text-white shadow-[0_10px_30px_-10px] shadow-brand/60 transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none sm:px-6 sm:text-sm"
 			>
 				<svg
 					viewBox="0 0 24 24"
@@ -48,7 +48,7 @@
 					stroke-width="1.8"
 					stroke-linecap="round"
 					stroke-linejoin="round"
-					class="h-4 w-4"
+					class="h-4 w-4 shrink-0"
 					aria-hidden="true"
 				>
 					<rect x="3" y="5" width="18" height="14" rx="2"></rect>

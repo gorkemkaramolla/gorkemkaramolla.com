@@ -31,7 +31,7 @@
 	}
 
 	.dark {
-		--background: 1 0% 4%;
+		--background: 0 0% 0%;
 		--foreground: 210 40% 98%;
 
 		--primary: 210 40% 98%;
@@ -80,7 +80,7 @@
 	--color-ring: hsl(var(--ring));
 
 	/* Brand accent (was orange-500/600/400) */
-	--color-brand: #6fcf97; /* orange-500 — primary accent */
+	--color-brand: #00ff41; /* orange-500 — primary accent */
 	--color-brand-strong: #3333ff; /* orange-600 — chat icon, FAB hover (light) */
 	--color-brand-soft: #3333ff; /* orange-400 — FAB hover (dark) */
 
@@ -109,6 +109,12 @@
 @layer base {
 	html {
 		scroll-behavior: smooth;
+	}
+
+	html,
+	body {
+		overflow-x: clip;
+		max-width: 100%;
 	}
 
 	*,

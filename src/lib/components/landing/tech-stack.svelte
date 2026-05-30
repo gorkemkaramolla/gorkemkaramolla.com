@@ -22,7 +22,7 @@
 				<ul class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
 					{#each group.items as item (item.name)}
 						<li
-							class="group flex items-center gap-3 rounded-2xl border border-border/70 bg-background/45 px-4 py-3.5 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-brand/30 hover:bg-background/60"
+							class="group flex min-w-0 items-center gap-3 rounded-2xl border border-border/70 bg-background/45 px-4 py-3.5 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-brand/30 hover:bg-background/60"
 						>
 							<img
 								src={`https://cdn.simpleicons.org/${item.slug}/${item.color}`}
@@ -32,7 +32,7 @@
 								loading="lazy"
 								class="h-7 w-7 shrink-0 transition-transform duration-200 group-hover:scale-110"
 							/>
-							<span class="text-sm font-medium text-foreground">{item.name}</span>
+							<span class="truncate text-sm font-medium text-foreground">{item.name}</span>
 						</li>
 					{/each}
 				</ul>

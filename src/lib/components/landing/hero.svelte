@@ -20,8 +20,7 @@
 			gridSize={3}
 			ditherMode="bayer"
 			colorMode="duotone"
-			primaryColor="#080b0f"
-			secondaryColor="#6FCF97"
+			secondaryColor="#00FF41"
 			contrast={1.18}
 			objectFit="contain"
 			pointerInteractive={false}
@@ -39,10 +38,13 @@
 	<div class="hero-content-scrim" aria-hidden="true"></div>
 
 	<!-- Foreground content -->
-	<div class="relative z-10 flex min-h-[86vh] max-w-2xl flex-col justify-center gap-7 py-20">
+	<div class="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+		<div
+			class="flex min-h-[78vh] max-w-2xl flex-col justify-center gap-6 py-14 sm:min-h-[86vh] sm:gap-7 sm:py-20"
+		>
 		<!-- Availability chip -->
 		<div
-			class="inline-flex w-fit items-center gap-2.5 rounded-full border border-border/70 bg-background/55 px-3.5 py-1.5 text-[0.7rem] font-semibold tracking-[0.18em] text-muted-foreground uppercase backdrop-blur-xl"
+			class="inline-flex w-fit items-center gap-2.5 rounded-full border border-border/70 px-3.5 py-1.5 text-[0.7rem] font-semibold tracking-[0.18em] text-muted-foreground uppercase backdrop-blur-xl"
 		>
 			<span class="relative flex h-2 w-2">
 				<span
@@ -137,10 +139,18 @@
 				</a>
 			{/each}
 		</div>
+		</div>
 	</div>
 </section>
 
 <style>
+	.hero-shell {
+		position: relative;
+		width: 100vw;
+		margin-inline: calc(50% - 50vw);
+		overflow-x: clip;
+	}
+
 	.hero-atmosphere,
 	.hero-content-scrim,
 	.hero-portrait {
@@ -149,7 +159,7 @@
 	}
 
 	.hero-atmosphere {
-		inset: 0 calc(50% - 50vw);
+		inset: 0;
 		z-index: 0;
 		background:
 			radial-gradient(
@@ -190,7 +200,7 @@
 	}
 
 	.hero-content-scrim {
-		inset: 0 calc(50% - 50vw);
+		inset: 0;
 		z-index: 2;
 		background: linear-gradient(
 			90deg,
@@ -237,26 +247,23 @@
 	}
 
 	@media (max-width: 767px) {
-		.hero-atmosphere {
-			inset-block: 0;
-		}
-
 		.hero-portrait {
-			top: 10rem;
-			right: -47vw;
-			bottom: 1.5rem;
-			width: 116vw;
-			height: auto;
-			opacity: 0.28;
+			top: 0;
+			right: -1rem;
+			bottom: 0;
+			width: min(68vw, 19rem);
+			height: 100%;
+			opacity: 0.7;
 		}
 
 		.hero-content-scrim,
 		:global(.dark) .hero-content-scrim {
 			background: linear-gradient(
-				180deg,
-				color-mix(in srgb, var(--color-background) 86%, transparent) 0%,
-				color-mix(in srgb, var(--color-background) 68%, transparent) 46%,
-				var(--color-background) 100%
+				90deg,
+				var(--color-background) 0%,
+				var(--color-background) 26%,
+				color-mix(in srgb, var(--color-background) 60%, transparent) 52%,
+				transparent 88%
 			);
 		}
 	}
