@@ -1,5 +1,6 @@
 <script lang="ts">
 	import DitherShader from '$lib/components/ui/dither-shader.svelte';
+	import { theme } from '$lib/stores/theme.svelte';
 	import type { Project } from '$lib/config/landing-content';
 
 	interface Props {
@@ -7,6 +8,9 @@
 	}
 
 	let { project }: Props = $props();
+
+	// Orange duotone on the black Ubuntu dark theme, aubergine on light.
+	const accent = $derived(theme.resolved === 'dark' ? '#E95420' : '#A83D9C');
 </script>
 
 <article
@@ -21,7 +25,7 @@
 				ditherMode="bayer"
 				colorMode="duotone"
 				primaryColor="#0a0a0a"
-				secondaryColor="#3333ff"
+				secondaryColor={accent}
 				contrast={1.12}
 				objectFit="cover"
 				pointerInteractive={false}

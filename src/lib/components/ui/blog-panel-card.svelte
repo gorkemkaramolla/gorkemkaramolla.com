@@ -1,5 +1,6 @@
 <script lang="ts">
 	import DitherShader from '$lib/components/ui/dither-shader.svelte';
+	import { theme } from '$lib/stores/theme.svelte';
 	import { cn } from '$lib/utils';
 
 	interface Props {
@@ -18,10 +19,11 @@
 
 	let { post, index, className = '' }: Props = $props();
 
-	// Hover swaps the dither duotone toward the brand accent.
+	// Hover swaps the dither duotone toward the brand accent (orange dark / aubergine light).
 	let hovered = $state(false);
+	const hoverAccent = $derived(theme.resolved === 'dark' ? '#e95420' : '#a83d9c');
 	const primaryColor = $derived(hovered ? '#0a0a0a' : '#161a1e');
-	const secondaryColor = $derived(hovered ? '#3333ff' : '#d2d7dd');
+	const secondaryColor = $derived(hovered ? hoverAccent : '#d2d7dd');
 
 	const KB_DIRECTIONS = ['kenburns-nw', 'kenburns-ne', 'kenburns-sw', 'kenburns-se'] as const;
 	const kbClass = KB_DIRECTIONS[index % KB_DIRECTIONS.length];

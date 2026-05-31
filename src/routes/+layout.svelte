@@ -3,7 +3,7 @@
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { theme } from '$lib/stores/theme.svelte';
-	import BackgroundNoise from '$lib/components/layouts/background-noise.svelte';
+	import AppBackground from '$lib/components/layouts/background-noise.svelte';
 	import Nav from '$lib/components/layouts/top-nav.svelte';
 	import Footer from '$lib/components/layouts/footer.svelte';
 	import ContactMeChat from '$lib/components/layouts/contact-me-chat.svelte';
@@ -30,7 +30,7 @@
 </svelte:head>
 
 <div class="relative flex min-h-screen flex-col print:pt-0">
-	<BackgroundNoise />
+	<AppBackground />
 	<Nav />
 
 	<main class="container mx-auto flex-1 px-4 py-5 sm:px-6 lg:px-8 print:p-0">
