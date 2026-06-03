@@ -4,6 +4,7 @@
 	import { onDestroy, tick } from 'svelte';
 
 	import Button from '$lib/components/ui/button.svelte';
+	import YaruCard from '$lib/components/ui/yaru-card.svelte';
 
 	import {
 		createChatMessage,
@@ -23,12 +24,6 @@
 	};
 
 	const orbitActions = siteConfig.contactWidget.orbitActions;
-	const assistantInitials = siteConfig.contactWidget.assistantName
-		.split(' ')
-		.map((part) => part[0] ?? '')
-		.slice(0, 2)
-		.join('')
-		.toUpperCase();
 	const floatingPanelClass = 'orbit-surface orbit-surface--panel';
 	const orbitButtonClass = 'orbit-surface orbit-surface--button';
 	const mainFabClass = 'orbit-surface orbit-surface--fab';
@@ -297,94 +292,28 @@
 >
 	<div class="relative flex flex-col items-end gap-4">
 		{#if activeSurface === 'chat'}
-			<div
+			<YaruCard
+				title={siteConfig.contactWidget.assistantName}
+				titleId="contact-chat-title"
 				role="dialog"
 				aria-labelledby="contact-chat-title"
+				onMinimize={() => {
+					isChatCollapsed = true;
+					isEmojiPickerOpen = false;
+				}}
+				onMaximize={() => {
+					isChatCollapsed = false;
+					isEmojiPickerOpen = false;
+				}}
+				onClose={closePanels}
+				bodyClass="flex flex-col"
 				class={cn(
-					'orbit-chat-panel pointer-events-auto absolute right-0 bottom-20 flex flex-col overflow-hidden rounded-[2rem] transition-[width,height,opacity,transform] duration-300 ease-out',
+					'pointer-events-auto absolute right-0 bottom-20 transition-[width,height,opacity,transform] duration-300 ease-out',
 					isChatCollapsed
 						? 'h-[min(calc(100vh-7.5rem),34rem)] w-[min(calc(100vw-1.5rem),24.5rem)] translate-y-0 opacity-100'
 						: 'h-[min(calc(100vh-7.5rem),46rem)] w-[min(calc(100vw-1.5rem),43rem)] translate-y-0 opacity-100'
 				)}
 			>
-				<header
-					class={cn(
-						'orbit-chat-header flex items-center justify-between gap-3',
-						isChatCollapsed ? 'px-4 py-3.5' : 'px-5 py-4'
-					)}
-				>
-					<div class="flex min-w-0 items-center gap-3">
-						<div class="orbit-chat-avatar" aria-hidden="true">{assistantInitials}</div>
-						<div class="min-w-0">
-							<h2
-								id="contact-chat-title"
-								class="truncate text-[0.98rem] font-semibold text-chat-fg"
-							>
-								{siteConfig.contactWidget.assistantName}
-							</h2>
-							<p class="mt-0.5 truncate text-xs text-chat-muted">{siteConfig.description}</p>
-						</div>
-					</div>
-
-					<div class="flex items-center gap-2">
-						<Button
-							type="button"
-							onclick={() => {
-								isChatCollapsed = !isChatCollapsed;
-								isEmojiPickerOpen = false;
-							}}
-							class="orbit-chat-control orbit-chat-control--accent inline-flex h-9 w-9 items-center justify-center rounded-full transition focus-visible:ring-2 focus-visible:ring-chat/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none"
-							aria-label={isChatCollapsed ? 'Expand chat' : 'Shrink chat'}
-						>
-							<svg
-								aria-hidden="true"
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.8"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								class="orbit-chat-control-icon h-4 w-4"
-							>
-								{#if isChatCollapsed}
-									<polyline points="15 3 21 3 21 9"></polyline>
-									<polyline points="9 21 3 21 3 15"></polyline>
-									<line x1="21" y1="3" x2="14" y2="10"></line>
-									<line x1="3" y1="21" x2="10" y2="14"></line>
-								{:else}
-									<polyline points="4 14 10 14 10 20"></polyline>
-									<polyline points="20 10 14 10 14 4"></polyline>
-									<line x1="14" y1="10" x2="21" y2="3"></line>
-									<line x1="3" y1="21" x2="10" y2="14"></line>
-								{/if}
-							</svg>
-						</Button>
-						<Button
-							type="button"
-							onclick={closePanels}
-							class="orbit-chat-control orbit-chat-control--danger inline-flex h-9 w-9 items-center justify-center rounded-full transition focus-visible:ring-2 focus-visible:ring-chat-danger-soft/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none"
-							aria-label="Close chat"
-						>
-							<svg
-								aria-hidden="true"
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.8"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								class="orbit-chat-control-icon h-4 w-4"
-							>
-								<path d="M18 6 6 18"></path>
-								<path d="m6 6 12 12"></path>
-							</svg>
-						</Button>
-					</div>
-				</header>
-
-				<div class="flex min-h-0 flex-1 flex-col">
 					<div
 						bind:this={transcriptEl}
 						class={cn(
@@ -397,7 +326,7 @@
 							{#if message.kind === 'system'}
 								<p
 									class={cn(
-										'mx-auto max-w-[34ch] text-center text-[0.95rem] leading-7 text-chat-muted',
+										'mx-auto max-w-[34ch] text-center text-[0.95rem] leading-7 text-muted-foreground',
 										isChatCollapsed ? 'pt-1' : 'pt-2'
 									)}
 								>
@@ -431,15 +360,15 @@
 
 						{#if hasPromptedForEmail || chatLeadState.status !== 'idle'}
 							<div class="orbit-chat-card rounded-[1.6rem] p-5">
-								<p class="text-sm font-semibold text-chat-fg">Leave your email</p>
-								<p class="mt-1 text-sm leading-6 text-chat-muted">
+								<p class="text-sm font-semibold text-foreground">Leave your email</p>
+								<p class="mt-1 text-sm leading-6 text-muted-foreground">
 									Drop your address and I'll follow up directly.
 								</p>
 
 								{#if chatLeadState.status === 'success'}
 									<div class="orbit-chat-success mt-4 rounded-[1.3rem] p-4">
-										<p class="text-sm font-medium text-chat-fg">{chatLeadState.message}</p>
-										<p class="mt-2 text-sm text-chat-muted">{chatEmail}</p>
+										<p class="text-sm font-medium text-foreground">{chatLeadState.message}</p>
+										<p class="mt-2 text-sm text-muted-foreground">{chatEmail}</p>
 									</div>
 								{:else}
 									<form
@@ -455,7 +384,7 @@
 											inputmode="email"
 											autocomplete="email"
 											placeholder="email@example.com"
-											class="orbit-chat-email-input min-w-0 flex-1 rounded-full px-4 py-3 text-sm placeholder:text-chat-faint focus:border-chat focus:ring-2 focus:ring-chat/15"
+											class="orbit-chat-email-input min-w-0 flex-1 rounded-full px-4 py-3 text-sm placeholder:text-muted-foreground/55 focus:border-chat focus:ring-2 focus:ring-chat/15"
 										/>
 										<Button
 											type="submit"
@@ -476,7 +405,7 @@
 
 					<div
 						class={cn(
-							'border-t border-[#eef2f7] bg-white/92',
+							'orbit-chat-footer border-t',
 							isChatCollapsed ? 'px-4 py-4' : 'px-6 py-5'
 						)}
 					>
@@ -495,7 +424,7 @@
 								rows="2"
 								placeholder="Message..."
 								class={cn(
-									'orbit-chat-textarea w-full resize-none border-0 bg-transparent px-1 py-1 text-[0.95rem] leading-6 placeholder:text-chat-faint focus:ring-0',
+									'orbit-chat-textarea w-full resize-none border-0 bg-transparent px-1 py-1 text-[0.95rem] leading-6 placeholder:text-muted-foreground/55 focus:ring-0',
 									isChatCollapsed ? 'min-h-[4.75rem]' : 'min-h-[5.75rem]'
 								)}
 							></textarea>
@@ -537,7 +466,7 @@
 												bind:value={emojiSearch}
 												type="search"
 												placeholder="Search emoji..."
-												class="orbit-emoji-search w-full rounded-full px-4 py-2 text-sm placeholder:text-chat-faint focus:border-chat focus:ring-2 focus:ring-chat/20"
+												class="orbit-emoji-search w-full rounded-full px-4 py-2 text-sm placeholder:text-muted-foreground/55 focus:border-chat focus:ring-2 focus:ring-chat/20"
 											/>
 
 											<div class="mt-3 max-h-56 space-y-3 overflow-y-auto pr-1">
@@ -595,8 +524,7 @@
 							</div>
 						</form>
 					</div>
-				</div>
-			</div>
+			</YaruCard>
 		{/if}
 
 		{#if activeSurface === 'cv'}
@@ -870,197 +798,134 @@
 		}
 	}
 
-	.orbit-chat-panel {
-		border: 1px solid rgb(225 229 238 / 0.94);
-		background:
-			radial-gradient(circle at top right, color-mix(in srgb, var(--color-chat) 6%, transparent), transparent 30%),
-			linear-gradient(180deg, rgb(255 255 255 / 0.99), rgb(249 250 252 / 0.98));
-		box-shadow: 0 36px 120px rgb(15 23 42 / 0.2);
-	}
-
-	.orbit-chat-header {
-		border-bottom: 1px solid rgb(234 237 243 / 0.95);
-		background: linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(250 250 252 / 0.96));
-	}
-
-	.orbit-chat-avatar {
-		display: inline-flex;
-		height: 2.35rem;
-		width: 2.35rem;
-		align-items: center;
-		justify-content: center;
-		border-radius: 9999px;
-		background: linear-gradient(135deg, var(--color-chat-bright), var(--color-chat));
-		box-shadow: 0 10px 24px color-mix(in srgb, var(--color-chat) 18%, transparent);
-		color: white;
-		font-size: 0.72rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-	}
-
-	.orbit-chat-control {
-		border: 1px solid rgb(225 231 240);
-		background: rgb(255 255 255 / 0.92);
-		color: rgb(100 116 139);
-		box-shadow: 0 8px 22px rgb(15 23 42 / 0.05);
-		transition:
-			color 200ms ease,
-			border-color 200ms ease,
-			background-color 200ms ease,
-			box-shadow 200ms ease,
-			transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
-	}
-
-	.orbit-chat-control:active {
-		transform: scale(0.92);
-	}
-
-	.orbit-chat-control-icon {
-		transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-	}
-
-	/* Accent (expand / shrink): leans blue and lifts, icon nudges out. */
-	.orbit-chat-control--accent:hover {
-		border-color: rgb(147 197 253);
-		background: rgb(239 246 255);
-		color: var(--color-chat-ink);
-		box-shadow: 0 10px 26px color-mix(in srgb, var(--color-chat) 18%, transparent);
-		transform: translateY(-1px);
-	}
-
-	.orbit-chat-control--accent:hover .orbit-chat-control-icon {
-		transform: scale(1.12);
-	}
-
-	/* Danger (close): turns rose and gives the × a quick quarter-turn. */
-	.orbit-chat-control--danger:hover {
-		border-color: rgb(253 164 175);
-		background: rgb(255 241 242);
-		color: rgb(225 29 72);
-		box-shadow: 0 10px 26px rgb(225 29 72 / 0.16);
-	}
-
-	.orbit-chat-control--danger:hover .orbit-chat-control-icon {
-		transform: rotate(90deg) scale(1.05);
-	}
-
+	/* Window chrome (frame, titlebar, controls) lives in YaruCard; the rules below
+	   style the chat body and inherit the --yaru-* custom properties from it. */
 	.orbit-chat-transcript {
-		background:
-			linear-gradient(180deg, rgb(255 255 255 / 0.38), rgb(255 255 255 / 0)),
-			linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(252 252 253 / 0.96));
+		background: var(--yaru-body);
 	}
 
 	.orbit-chat-assistant-bubble {
-		border: 1px solid rgb(235 239 244);
-		background: rgb(245 247 250);
-		box-shadow: 0 14px 34px rgb(15 23 42 / 0.05);
-		color: rgb(17 24 39);
+		border: 1px solid var(--yaru-border);
+		background: var(--yaru-body-2);
+		color: var(--yaru-text);
 	}
 
 	.orbit-chat-user-bubble {
-		background: linear-gradient(180deg, var(--color-chat), var(--color-chat-deep));
-		box-shadow: 0 18px 40px color-mix(in srgb, var(--color-chat) 24%, transparent);
-		color: white;
+		background: linear-gradient(180deg, var(--color-brand), var(--color-brand-strong));
+		box-shadow: 0 14px 30px color-mix(in srgb, var(--color-brand) 26%, transparent);
+		color: #fff;
 	}
 
 	.orbit-chat-card {
-		border: 1px solid rgb(228 233 241);
-		background: rgb(255 255 255 / 0.98);
-		box-shadow: 0 12px 34px rgb(15 23 42 / 0.04);
+		border: 1px solid var(--yaru-border);
+		background: var(--yaru-body-2);
 	}
 
 	.orbit-chat-success {
-		border: 1px solid rgb(213 225 255);
-		background: linear-gradient(180deg, rgb(247 250 255), rgb(241 245 255));
+		border: 1px solid color-mix(in srgb, var(--color-brand) 36%, var(--yaru-border));
+		background: color-mix(in srgb, var(--color-brand) 9%, var(--yaru-body));
 	}
 
 	.orbit-chat-email-input {
-		border: 1px solid rgb(218 225 234);
-		background: white;
-		color: rgb(15 23 42);
+		border: 1px solid var(--yaru-border);
+		background: var(--yaru-body);
+		color: var(--yaru-text);
+	}
+
+	.orbit-chat-email-input:focus {
+		border-color: var(--color-brand);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 22%, transparent);
+		outline: none;
 	}
 
 	.orbit-chat-primary-button {
-		border: 1px solid rgb(198 214 255);
-		background: rgb(240 244 255);
-		color: rgb(29 78 216);
+		border: 1px solid transparent;
+		background: var(--color-brand);
+		color: #fff;
 	}
 
 	.orbit-chat-primary-button:hover {
-		border-color: rgb(147 197 253);
-		background: rgb(231 238 255);
+		filter: brightness(1.05);
+	}
+
+	.orbit-chat-footer {
+		border-top-color: var(--yaru-titlebar-border);
+		background: var(--yaru-titlebar);
 	}
 
 	.orbit-chat-composer {
-		border: 2px solid var(--color-chat-ink);
-		background: white;
-		box-shadow: 0 18px 46px rgb(59 130 246 / 0.08);
+		border: 1px solid var(--yaru-border);
+		background: var(--yaru-body);
+		box-shadow: none;
+	}
+
+	.orbit-chat-composer:focus-within {
+		border-color: var(--color-brand);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 18%, transparent);
 	}
 
 	.orbit-chat-textarea {
-		color: rgb(15 23 42);
+		color: var(--yaru-text);
 	}
 
 	.orbit-chat-action-button {
-		border: 1px solid rgb(223 228 237);
-		background: rgb(248 250 252);
-		color: rgb(100 116 139);
+		border: 1px solid var(--yaru-border);
+		background: var(--yaru-body-2);
+		color: var(--yaru-muted);
 	}
 
 	.orbit-chat-action-button:hover {
-		border-color: rgb(191 219 254);
-		background: rgb(239 246 255);
-		color: var(--color-chat-ink);
+		border-color: color-mix(in srgb, var(--color-brand) 45%, var(--yaru-border));
+		background: color-mix(in srgb, var(--color-brand) 10%, var(--yaru-body));
+		color: var(--color-brand);
 	}
 
 	.orbit-chat-send-button {
-		background: linear-gradient(180deg, var(--color-chat), var(--color-chat-deep));
-		box-shadow: 0 18px 36px color-mix(in srgb, var(--color-chat) 24%, transparent);
-		color: white;
+		background: linear-gradient(180deg, var(--color-brand), var(--color-brand-strong));
+		box-shadow: 0 14px 28px color-mix(in srgb, var(--color-brand) 26%, transparent);
+		color: #fff;
 	}
 
 	.orbit-chat-send-button:hover:not(:disabled) {
-		filter: brightness(1.04);
+		filter: brightness(1.05);
 	}
 
 	.orbit-chat-send-button:disabled {
-		background: rgb(226 232 240);
+		background: var(--yaru-control);
 		box-shadow: none;
-		color: rgb(148 163 184);
+		color: var(--yaru-muted);
 	}
 
 	.orbit-emoji-popover {
-		border: 1px solid rgb(228 233 241);
-		background: linear-gradient(180deg, rgb(255 255 255 / 0.99), rgb(248 250 252 / 0.98));
-		box-shadow: 0 20px 50px rgb(15 23 42 / 0.12);
-		color: rgb(15 23 42);
+		border: 1px solid var(--yaru-border);
+		background: var(--yaru-body);
+		box-shadow: 0 20px 50px rgb(0 0 0 / 0.18);
+		color: var(--yaru-text);
 	}
 
 	.orbit-emoji-search {
-		border: 1px solid rgb(226 232 240 / 0.9);
-		background: linear-gradient(180deg, rgb(255 255 255), rgb(248 250 252));
-		color: rgb(15 23 42);
-		box-shadow: 0 10px 24px rgb(2 6 23 / 0.12);
+		border: 1px solid var(--yaru-border);
+		background: var(--yaru-body-2);
+		color: var(--yaru-text);
 	}
 
 	.orbit-emoji-label {
-		color: rgb(148 163 184);
+		color: var(--yaru-muted);
 	}
 
 	.orbit-emoji-option {
-		border: 1px solid rgb(226 232 240 / 0.9);
-		background: linear-gradient(180deg, rgb(255 255 255), rgb(244 247 251));
-		box-shadow: 0 10px 24px rgb(2 6 23 / 0.14);
+		border: 1px solid var(--yaru-border);
+		background: var(--yaru-body-2);
 	}
 
 	.orbit-emoji-option:hover {
-		border-color: rgb(147 197 253 / 0.7);
-		background: linear-gradient(180deg, rgb(255 255 255), rgb(239 246 255));
+		border-color: color-mix(in srgb, var(--color-brand) 45%, var(--yaru-border));
+		background: color-mix(in srgb, var(--color-brand) 10%, var(--yaru-body));
 		transform: translateY(-1px);
 	}
 
 	.orbit-emoji-empty {
-		color: rgb(100 116 139);
+		color: var(--yaru-muted);
 	}
 
 	:global(.dark) .orbit-surface {
@@ -1084,20 +949,4 @@
 		box-shadow: 0 24px 55px rgb(0 0 0 / 0.45);
 	}
 
-	:global(.dark) .orbit-chat-panel,
-	:global(.dark) .orbit-chat-header,
-	:global(.dark) .orbit-chat-transcript,
-	:global(.dark) .orbit-chat-card,
-	:global(.dark) .orbit-chat-composer,
-	:global(.dark) .orbit-chat-control,
-	:global(.dark) .orbit-chat-action-button,
-	:global(.dark) .orbit-chat-email-input,
-	:global(.dark) .orbit-chat-primary-button,
-	:global(.dark) .orbit-chat-success,
-	:global(.dark) .orbit-chat-assistant-bubble,
-	:global(.dark) .orbit-emoji-popover,
-	:global(.dark) .orbit-emoji-search,
-	:global(.dark) .orbit-emoji-option {
-		color-scheme: light;
-	}
 </style>
