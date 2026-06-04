@@ -1,6 +1,4 @@
 <script lang="ts">
-	import DitherShader from '$lib/components/ui/dither-shader.svelte';
-	import { theme } from '$lib/stores/theme.svelte';
 	import type { Project } from '$lib/config/landing-content';
 
 	interface Props {
@@ -8,28 +6,19 @@
 	}
 
 	let { project }: Props = $props();
-
-	// Orange duotone on the black Ubuntu dark theme, aubergine on light.
-	const accent = $derived(theme.resolved === 'dark' ? '#E95420' : '#A83D9C');
 </script>
 
 <article
 	class="group relative flex flex-col overflow-hidden rounded-[1.6rem] border border-border/70 bg-background/45 backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:border-brand/30 hover:bg-background/60"
 >
-	<!-- Dithered thumbnail (cohesive with the hero) -->
+	<!-- Project thumbnail -->
 	<div class="relative aspect-[16/10] w-full overflow-hidden">
 		<div class="h-full w-full transition-transform duration-700 group-hover:scale-[1.04]">
-			<DitherShader
+			<img
 				src={project.image}
-				gridSize={2}
-				ditherMode="bayer"
-				colorMode="duotone"
-				primaryColor="#0a0a0a"
-				secondaryColor={accent}
-				contrast={1.12}
-				objectFit="cover"
-				pointerInteractive={false}
-				className="rounded-none"
+				alt={project.title}
+				loading="lazy"
+				class="h-full w-full object-cover"
 			/>
 		</div>
 		<div

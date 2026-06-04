@@ -1,22 +1,12 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import { theme } from '$lib/stores/theme.svelte';
 	import AppBackground from '$lib/components/layouts/background-noise.svelte';
 	import Nav from '$lib/components/layouts/top-nav.svelte';
 	import Footer from '$lib/components/layouts/footer.svelte';
 	import ContactMeChat from '$lib/components/layouts/contact-me-chat.svelte';
 
-	let { children, data } = $props();
-
-	$effect(() => {
-		const serverTheme = data.theme;
-
-		untrack(() => {
-			theme.init(serverTheme);
-		});
-	});
+	let { children } = $props();
 </script>
 
 <svelte:head>

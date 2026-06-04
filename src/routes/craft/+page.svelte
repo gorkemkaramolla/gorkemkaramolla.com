@@ -116,7 +116,7 @@
 			autoplay={true}
 			showControls={false}
 			defaultDurationMs={5000}
-			className="mx-auto w-full border-border/70 shadow-[0_30px_90px_rgba(148,163,184,0.22)] dark:border-white/12 dark:shadow-[0_30px_90px_rgba(0,0,0,0.55)]"
+			className="mx-auto w-full border-border/70 shadow-[0_30px_90px_rgba(148,163,184,0.22)] border-white/12 shadow-[0_30px_90px_rgba(0,0,0,0.55)]"
 			panelHeightClass="h-[34rem] sm:h-[42rem] lg:h-[72vh] lg:min-h-[42rem] lg:max-h-[54rem]"
 		/>
 	</section>

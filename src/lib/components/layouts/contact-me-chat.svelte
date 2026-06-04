@@ -583,7 +583,7 @@
 		{/if}
 
 		<div
-			class="pointer-events-none absolute right-0 bottom-0 h-32 w-32 rounded-full border border-black/8 [mask-image:radial-gradient(circle_at_bottom_right,transparent_34%,black_35%,black_67%,transparent_69%)] dark:border-white/8"
+			class="pointer-events-none absolute right-0 bottom-0 h-32 w-32 rounded-full border border-white/8 [mask-image:radial-gradient(circle_at_bottom_right,transparent_34%,black_35%,black_67%,transparent_69%)]"
 		></div>
 
 		{#each orbitActions as action (action.id)}
@@ -603,10 +603,10 @@
 				<span
 					class={cn(
 						'inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/70 bg-background/60 text-muted-foreground',
-						action.id === 'chat' && 'text-brand-strong dark:text-brand-soft',
-						action.id === 'cv' && 'text-emerald-600 dark:text-emerald-300',
-						action.id === 'linkedin' && 'text-sky-600 dark:text-sky-400',
-						action.id === 'github' && 'text-violet-600 dark:text-violet-400'
+						action.id === 'chat' && 'text-brand-soft',
+						action.id === 'cv' && 'text-emerald-300',
+						action.id === 'linkedin' && 'text-sky-400',
+						action.id === 'github' && 'text-violet-400'
 					)}
 				>
 					{#if action.id === 'chat'}
@@ -671,11 +671,11 @@
 		<Button
 			type="button"
 			onclick={handlePrimaryAction}
-			class={`pointer-events-auto relative inline-flex h-16 w-16 items-center justify-center rounded-full text-foreground ${mainFabClass} transition hover:border-brand/35 hover:text-brand-strong focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none dark:hover:text-brand-soft`}
+			class={`pointer-events-auto relative inline-flex h-16 w-16 items-center justify-center rounded-full text-foreground ${mainFabClass} transition hover:border-brand/35 hover:text-brand-soft focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none`}
 			aria-label={isPrimaryFabActive ? 'Close contact controls' : 'Open contact controls'}
 			aria-expanded={isOrbitOpen}
 		>
-			<span class="absolute inset-1 rounded-full border border-black/8 dark:border-white/8"></span>
+			<span class="absolute inset-1 rounded-full border border-white/8"></span>
 			<span
 				class="absolute h-9 w-9 rounded-full border border-brand/16 bg-brand/6 blur-sm"
 			></span>
@@ -726,19 +726,19 @@
 
 	.orbit-surface--panel {
 		background:
-			radial-gradient(circle at top, color-mix(in srgb, var(--color-brand) 11%, transparent), transparent 52%),
-			linear-gradient(180deg, rgb(255 255 255 / 0.94), rgb(244 246 251 / 0.98));
-		box-shadow: 0 28px 90px rgb(148 163 184 / 0.24);
+			radial-gradient(circle at top, color-mix(in srgb, var(--color-brand) 12%, transparent), transparent 52%),
+			linear-gradient(180deg, rgb(10 12 20 / 0.96), rgb(4 5 10 / 0.96));
+		box-shadow: 0 28px 90px rgb(0 0 0 / 0.48);
 	}
 
 	.orbit-surface--button {
-		background: linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(244 246 251 / 0.98));
-		box-shadow: 0 18px 45px rgb(148 163 184 / 0.22);
+		background: linear-gradient(180deg, rgb(12 14 24 / 0.95), rgb(6 8 14 / 0.95));
+		box-shadow: 0 18px 45px rgb(0 0 0 / 0.35);
 	}
 
 	.orbit-surface--fab {
-		background: linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(242 244 250 / 0.98));
-		box-shadow: 0 24px 55px rgb(148 163 184 / 0.24);
+		background: linear-gradient(180deg, rgb(16 18 28 / 0.98), rgb(8 10 18 / 0.98));
+		box-shadow: 0 24px 55px rgb(0 0 0 / 0.45);
 	}
 
 	.orbit-fab-icon-stack {
@@ -802,6 +802,25 @@
 	   style the chat body and inherit the --yaru-* custom properties from it. */
 	.orbit-chat-transcript {
 		background: var(--yaru-body);
+		scrollbar-width: thin;
+		scrollbar-color: var(--yaru-control) transparent;
+	}
+
+	.orbit-chat-transcript::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.orbit-chat-transcript::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.orbit-chat-transcript::-webkit-scrollbar-thumb {
+		background: var(--yaru-control);
+		border-radius: 3px;
+	}
+
+	.orbit-chat-transcript::-webkit-scrollbar-thumb:hover {
+		background: var(--yaru-control-hover);
 	}
 
 	.orbit-chat-assistant-bubble {
@@ -928,25 +947,8 @@
 		color: var(--yaru-muted);
 	}
 
-	:global(.dark) .orbit-surface {
+	.orbit-surface {
 		border-color: rgb(255 255 255 / 0.1);
-	}
-
-	:global(.dark) .orbit-surface--panel {
-		background:
-			radial-gradient(circle at top, color-mix(in srgb, var(--color-brand) 12%, transparent), transparent 52%),
-			linear-gradient(180deg, rgb(10 12 20 / 0.96), rgb(4 5 10 / 0.96));
-		box-shadow: 0 28px 90px rgb(0 0 0 / 0.48);
-	}
-
-	:global(.dark) .orbit-surface--button {
-		background: linear-gradient(180deg, rgb(12 14 24 / 0.95), rgb(6 8 14 / 0.95));
-		box-shadow: 0 18px 45px rgb(0 0 0 / 0.35);
-	}
-
-	:global(.dark) .orbit-surface--fab {
-		background: linear-gradient(180deg, rgb(16 18 28 / 0.98), rgb(8 10 18 / 0.98));
-		box-shadow: 0 24px 55px rgb(0 0 0 / 0.45);
 	}
 
 </style>

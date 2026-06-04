@@ -1,6 +1,4 @@
 <script lang="ts">
-	import DitherShader from '$lib/components/ui/dither-shader.svelte';
-	import { theme } from '$lib/stores/theme.svelte';
 	import { cn } from '$lib/utils';
 
 	interface Props {
@@ -18,12 +16,6 @@
 	}
 
 	let { post, index, className = '' }: Props = $props();
-
-	// Hover swaps the dither duotone toward the brand accent (orange dark / aubergine light).
-	let hovered = $state(false);
-	const hoverAccent = $derived(theme.resolved === 'dark' ? '#e95420' : '#a83d9c');
-	const primaryColor = $derived(hovered ? '#0a0a0a' : '#161a1e');
-	const secondaryColor = $derived(hovered ? hoverAccent : '#d2d7dd');
 
 	const KB_DIRECTIONS = ['kenburns-nw', 'kenburns-ne', 'kenburns-sw', 'kenburns-se'] as const;
 	const kbClass = KB_DIRECTIONS[index % KB_DIRECTIONS.length];
@@ -45,10 +37,8 @@
 		'group relative flex flex-col overflow-hidden rounded-[1.6rem] border border-border/70 bg-background/45 backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:border-brand/28 hover:bg-background/60',
 		className
 	)}
-	onmouseenter={() => (hovered = true)}
-	onmouseleave={() => (hovered = false)}
 >
-	<!-- Dithered image with Ken Burns -->
+	<!-- Featured image with Ken Burns -->
 	<div class="relative aspect-video w-full overflow-hidden">
 		<div
 			class={cn(
@@ -56,18 +46,11 @@
 				kbClass
 			)}
 		>
-			<DitherShader
+			<img
 				src={imageSrc}
-				pointerInteractive={true}
-				pointerMode="pan"
-				gridSize={1}
-				colorMode="duotone"
-				{primaryColor}
-				{secondaryColor}
-				contrast={1.12}
-				brightness={-0.03}
-				threshold={0.5}
-				className="rounded-none"
+				alt={post.title}
+				loading="lazy"
+				class="h-full w-full object-cover"
 			/>
 		</div>
 		<!-- Vignette -->

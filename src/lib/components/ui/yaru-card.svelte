@@ -121,26 +121,25 @@
 </div>
 
 <style>
-	/* ── Ubuntu / Yaru window (theme-aware) ──
+	/* ── Ubuntu / Yaru window (dark) ──
 	   Exposes --yaru-* custom properties so nested content can match the window. */
 	.yaru-card {
-		/* Light Yaru */
-		--yaru-titlebar: #fafafa;
-		--yaru-titlebar-border: #d3d0cb;
-		--yaru-body: #ffffff;
-		--yaru-body-2: #f4f2f0;
-		--yaru-text: #2d2d2d;
-		--yaru-muted: #5e5c64;
-		--yaru-border: #e3e0dc;
-		--yaru-control: rgb(0 0 0 / 0.07);
-		--yaru-control-hover: rgb(0 0 0 / 0.13);
+		--yaru-titlebar: #303030;
+		--yaru-titlebar-border: #1c1c1c;
+		--yaru-body: #242424;
+		--yaru-body-2: #2e2e2e;
+		--yaru-text: #ffffff;
+		--yaru-muted: #c0bfbc;
+		--yaru-border: #1c1c1c;
+		--yaru-control: rgb(255 255 255 / 0.1);
+		--yaru-control-hover: rgb(255 255 255 / 0.18);
 
 		border: 1px solid var(--yaru-titlebar-border);
 		background: var(--yaru-body);
 		color: var(--yaru-text);
 		box-shadow:
-			0 0 0 1px rgb(0 0 0 / 0.04),
-			0 32px 90px rgb(0 0 0 / 0.32);
+			0 0 0 1px rgb(0 0 0 / 0.6),
+			0 32px 90px rgb(0 0 0 / 0.62);
 	}
 
 	.yaru-card__titlebar {
@@ -181,20 +180,4 @@
 		color: #fff;
 	}
 
-	/* Dark Yaru (#303030 titlebar, dark body) — matches the Ubuntu dark window */
-	:global(.dark) .yaru-card {
-		--yaru-titlebar: #303030;
-		--yaru-titlebar-border: #1c1c1c;
-		--yaru-body: #242424;
-		--yaru-body-2: #2e2e2e;
-		--yaru-text: #ffffff;
-		--yaru-muted: #c0bfbc;
-		--yaru-border: #1c1c1c;
-		--yaru-control: rgb(255 255 255 / 0.1);
-		--yaru-control-hover: rgb(255 255 255 / 0.18);
-
-		box-shadow:
-			0 0 0 1px rgb(0 0 0 / 0.6),
-			0 32px 90px rgb(0 0 0 / 0.62);
-	}
 </style>

@@ -43,13 +43,6 @@
 
 <style>
 	:global(.blog-index-shell) {
-		background:
-			radial-gradient(circle at top right, color-mix(in srgb, var(--color-brand) 14%, transparent), transparent 42%),
-			linear-gradient(180deg, rgb(255 255 255 / 0.9), rgb(244 246 251 / 0.96));
-		box-shadow: 0 24px 80px rgb(148 163 184 / 0.2);
-	}
-
-	:global(.dark) :global(.blog-index-shell) {
 		border-color: rgb(255 255 255 / 0.1);
 		background:
 			radial-gradient(circle at top right, color-mix(in srgb, var(--color-brand) 12%, transparent), transparent 42%),

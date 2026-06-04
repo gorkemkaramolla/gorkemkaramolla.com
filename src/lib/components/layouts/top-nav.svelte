@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { siteConfig } from '$lib/config/site-config';
-	import ThemeToggle from '$lib/components/layouts/theme-toggle.svelte';
 </script>
 
 <nav
@@ -14,12 +13,14 @@
 			href={resolve('/')}
 			class="group inline-flex min-w-0 items-center gap-2 font-mono text-sm tracking-tight sm:text-base"
 		>
-			<span class="min-w-0 truncate font-semibold">
-				<span class="text-brand">gorkemkaramolla</span><span class="text-muted-foreground"
+			<span
+				class="min-w-0 truncate font-semibold [text-shadow:0_0_6px_rgba(168,123,255,0.45)]"
+			>
+				<span class="text-[#a87bff]">gorkemkaramolla</span><span class="text-[#7b67b8]"
 					>@Istanbul</span
 				>
-				<span class="text-muted-foreground">~</span>
-				<span class="text-brand transition-transform duration-200 group-hover:scale-125">$</span>
+				<span class="text-[#7b67b8]">~</span>
+				<span class="text-[#a87bff] transition-transform duration-200 group-hover:scale-125">$</span>
 			</span>
 		</a>
 
@@ -33,9 +34,6 @@
 				</a>
 			{/each}
 
-			<div class="rounded-full border border-border/70 bg-background/55">
-				<ThemeToggle />
-			</div>
 		</div>
 	</div>
 </nav>

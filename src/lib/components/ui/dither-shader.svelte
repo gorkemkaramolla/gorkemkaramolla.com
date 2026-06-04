@@ -5,7 +5,7 @@
 	type DitheringMode = 'bayer' | 'halftone' | 'noise' | 'crosshatch';
 	type ColorMode = 'original' | 'grayscale' | 'duotone' | 'custom';
 	type ObjectFitMode = 'cover' | 'contain' | 'fill' | 'none';
-	type PointerMode = 'warp' | 'pan';
+	type PointerMode = 'pan' | 'decode' | 'bulge' | 'glitch';
 	interface Props {
 		src: string;
 		gridSize?: number;
@@ -32,6 +32,14 @@
 		removeLightBackground?: boolean;
 		lightBackgroundThreshold?: number;
 		lightBackgroundChroma?: number;
+		entranceContrastFrom?: number;
+		entranceDuration?: number;
+		ambientGlitch?: boolean;
+		glitchIntensity?: number;
+		glitchColorA?: string;
+		glitchColorB?: string;
+		glitchActivation?: 'always' | 'hover';
+		glitchActive?: boolean;
 	}
 
 	let {
@@ -53,13 +61,21 @@
 		animationSpeed = 0.02,
 		className = '',
 		pointerInteractive = true,
-		pointerMode = 'warp',
+		pointerMode = 'decode',
 		waveAmplitude = 0,
 		waveFrequency = 6,
 		waveSpeed = 1,
 		removeLightBackground = false,
 		lightBackgroundThreshold = 222,
-		lightBackgroundChroma = 36
+		lightBackgroundChroma = 36,
+		entranceContrastFrom = undefined,
+		entranceDuration = 0,
+		ambientGlitch = false,
+		glitchIntensity = 1,
+		glitchColorA = '#ff2e7a',
+		glitchColorB = '#22e1ff',
+		glitchActivation = 'always',
+		glitchActive = false
 	}: Props = $props();
 
 	const BAYER_MATRIX_4X4 = [
@@ -89,8 +105,11 @@
 	let imageData: ImageData | null = null;
 	let dimensions = { width: 0, height: 0 };
 	let pointer = { x: 0.5, y: 0.5, active: false };
+	let hoverLevel = 0; // smooth 0..1 ramp driving the 'hover' glitch activation
+	// Wall-clock start of the one-time contrast entrance ramp; set once on first draw.
+	let entranceStart: number | null = null;
 	const settingsKey = $derived(
-		`${gridSize}-${ditherMode}-${colorMode}-${invert}-${pixelRatio}-${primaryColor}-${secondaryColor}-${customPalette.join('|')}-${brightness}-${contrast}-${backgroundColor}-${objectFit}-${threshold}-${animated}-${animationSpeed}-${waveAmplitude}-${waveFrequency}-${waveSpeed}-${removeLightBackground}-${lightBackgroundThreshold}-${lightBackgroundChroma}`
+		`${gridSize}-${ditherMode}-${colorMode}-${invert}-${pixelRatio}-${primaryColor}-${secondaryColor}-${customPalette.join('|')}-${brightness}-${contrast}-${backgroundColor}-${objectFit}-${threshold}-${animated}-${animationSpeed}-${waveAmplitude}-${waveFrequency}-${waveSpeed}-${removeLightBackground}-${lightBackgroundThreshold}-${lightBackgroundChroma}-${ambientGlitch}-${glitchIntensity}-${glitchColorA}-${glitchColorB}-${glitchActivation}`
 	);
 
 	function parseColor(color: string): [number, number, number] {
@@ -121,6 +140,12 @@
 
 	function getLuminance(r: number, g: number, b: number): number {
 		return 0.299 * r + 0.587 * g + 0.114 * b;
+	}
+
+	// Cheap hash noise in [0, 1) — used by the 'decode' / 'glitch' pointer effects.
+	function hashNoise(a: number, b: number): number {
+		const v = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453;
+		return v - Math.floor(v);
 	}
 
 	function isConnectedBackdropPixel(data: Uint8ClampedArray, idx: number): boolean {
@@ -237,27 +262,174 @@
 		const parsedPrimary = parseColor(primaryColor);
 		const parsedSecondary = parseColor(secondaryColor);
 		const parsedPalette = customPalette.map(parseColor);
+		const parsedGlitchA = parseColor(glitchColorA); // warm fringe (trailing edge)
+		const parsedGlitchB = parseColor(glitchColorB); // cool fringe (leading edge)
+
+		// One-time contrast entrance: ramp from `entranceContrastFrom` up to `contrast`
+		// over `entranceDuration` ms (ease-out), based on wall-clock time since first draw.
+		let activeContrast = contrast;
+		if (entranceContrastFrom != null && entranceDuration > 0 && entranceStart !== null) {
+			const progress = clamp((performance.now() - entranceStart) / entranceDuration, 0, 1);
+			const eased = 1 - Math.pow(1 - progress, 3);
+			activeContrast = entranceContrastFrom + (contrast - entranceContrastFrom) * eased;
+		}
+
+		// Ambient glitch envelope. Driven purely by frameTime so the portrait corrupts
+		// itself on a rhythm — calm most of the time, then short, irregular bursts that
+		// tear bands sideways, split the colour channels and drop scanlines. No pointer
+		// needed; the glitch lives inside the animation itself.
+		// In 'hover' mode the whole effect is gated by a smooth pointer-driven ramp, so the
+		// portrait stays calm until hovered; 'always' keeps the continuous ambient run.
+		const glitchGate = glitchActivation === 'hover' ? hoverLevel : 1;
+		const glitchOn = ambientGlitch && glitchIntensity > 0 && glitchGate > 0.001;
+		const glitchBandHeight = Math.max(2, gridSize * 6);
+		let glitchTick = 0;
+		let glitchBurst = 0;
+		let glitchRoll = 0; // whole-frame vertical jump during heavy bursts
+		let glitchJump = 0; // whole-frame horizontal jump during heavy bursts
+		if (glitchOn) {
+			glitchTick = Math.floor(frameTime * 9);
+			// Three-tier rhythm: mostly calm with faint life, frequent gentle flickers,
+			// and a rare heavy hit (~every couple of seconds) that also jolts the frame.
+			const roll = hashNoise(glitchTick, 11.3);
+			const heavy = roll > 0.94;
+			let surge = 0.05;
+			if (heavy) surge = 0.7 + 0.3 * hashNoise(glitchTick, 4.7);
+			else if (roll > 0.78) surge = 0.25 + 0.25 * hashNoise(glitchTick, 4.7);
+			glitchBurst = clamp(surge * glitchIntensity, 0, 1) * glitchGate;
+			if (heavy) {
+				glitchRoll = (hashNoise(glitchTick, 9.1) - 0.5) * 0.035 * glitchIntensity * glitchGate;
+				glitchJump = (hashNoise(glitchTick, 2.3) - 0.5) * 0.03 * glitchIntensity * glitchGate;
+			}
+		}
+
+		// Luminance of a source pixel with the same contrast/brightness as the main
+		// sample — lets the split read the dither decision a few pixels left/right.
+		const sampleGlitchLum = (sx: number, sy: number): number => {
+			const cx = sx < 0 ? 0 : sx > sourceWidth - 1 ? sourceWidth - 1 : sx;
+			const idx = (sy * sourceWidth + cx) * 4;
+			const lr = sourceData[idx] || 0;
+			const lg = sourceData[idx + 1] || 0;
+			const lb = sourceData[idx + 2] || 0;
+			return (
+				clamp((getLuminance(lr, lg, lb) - 128) * activeContrast + 128 + brightness * 255, 0, 255) /
+				255
+			);
+		};
 
 		for (let y = 0; y < displayHeight; y += effectivePixelSize) {
 			for (let x = 0; x < displayWidth; x += effectivePixelSize) {
 				const nx = x / displayWidth;
 				const ny = y / displayHeight;
-				const dist = Math.hypot(nx - pointer.x, ny - pointer.y);
-				const influence = pointerInteractive && pointer.active ? Math.max(0, 1 - dist * 2.4) : 0;
-				const panX =
-					pointerInteractive && pointer.active ? (pointer.x - 0.5) * sourceWidth * 0.03 : 0;
-				const panY =
-					pointerInteractive && pointer.active ? (pointer.y - 0.5) * sourceHeight * 0.03 : 0;
-				const warpX = nx + (pointer.x - 0.5) * 0.06 * influence;
-				const warpY = ny + (pointer.y - 0.5) * 0.06 * influence;
-				let mappedX =
-					pointerMode === 'pan'
-						? (x / displayWidth) * sourceWidth + panX
-						: clamp(warpX, 0, 1) * sourceWidth;
-				let mappedY =
-					pointerMode === 'pan'
-						? (y / displayHeight) * sourceHeight + panY
-						: clamp(warpY, 0, 1) * sourceHeight;
+				const active = pointerInteractive && pointer.active;
+				const pdx = nx - pointer.x;
+				const pdy = ny - pointer.y;
+				const pdist = Math.hypot(pdx, pdy);
+
+				// Per-mode pointer interaction. Each effect nudges where we sample the
+				// source (sampleNx/sampleNy) and/or how the pixel is shaded below.
+				let sampleNx = nx;
+				let sampleNy = ny;
+				let thresholdShift = 0; // pushes the dither threshold near the cursor
+				let brightnessMul = 1; // dims / brightens the output (decode torch)
+				let forceHighlight = false; // paint the cell as a bright highlight
+				let aberration = 0; // chromatic-split tint for the glitch effect (-1 / +1)
+				let splitPx = 0; // chromatic RGB-split distance in source px (ambient glitch)
+				let fringeMix = 0; // how strongly the split fringe replaces the base colour
+
+				if (active) {
+					switch (pointerMode) {
+						case 'pan': {
+							sampleNx = nx + (pointer.x - 0.5) * 0.04;
+							sampleNy = ny + (pointer.y - 0.5) * 0.04;
+							break;
+						}
+						case 'bulge': {
+							// Liquid lens: pull samples toward the cursor so the centre magnifies.
+							const radius = 0.32;
+							if (pdist < radius) {
+								const pull = Math.pow(pdist / radius, 1.7);
+								sampleNx = pointer.x + pdx * pull;
+								sampleNy = pointer.y + pdy * pull;
+							}
+							break;
+						}
+						case 'decode': {
+							// Torch that "decodes" the face near the cursor and scrambles it away.
+							const reveal = clamp((0.26 - pdist) / 0.14, 0, 1);
+							const scramble = 1 - reveal;
+							brightnessMul = 0.5 + 0.5 * reveal;
+							forceHighlight = reveal > 0.93;
+							if (scramble > 0) {
+								const n1 = hashNoise(x * 1.7 + frameTime * 40, y * 0.9);
+								const n2 = hashNoise(x * 0.8, y * 1.3 + frameTime * 33);
+								sampleNx = nx + (n1 - 0.5) * 0.7 * scramble;
+								sampleNy = ny + (n2 - 0.5) * 0.7 * scramble;
+								thresholdShift = (hashNoise(x + frameTime * 60, y * 2.1) - 0.5) * scramble;
+							}
+							break;
+						}
+						case 'glitch': {
+							// Realistic digital corruption that concentrates around the cursor and
+							// fires in irregular bursts (most frames are calm, some tear hard).
+							const near = clamp(1 - pdist / 0.5, 0, 1);
+							if (near > 0) {
+								const tick = Math.floor(frameTime * 7);
+								const burst = hashNoise(tick, 4.2); // calm vs. heavy corruption
+								const intensity = near * (burst > 0.7 ? 1 : 0.18);
+
+								// Datamosh: horizontal block-rows tear sideways by random amounts.
+								const band = Math.floor(y / Math.max(2, gridSize * 5));
+								const rowRand = hashNoise(band * 2.7, tick * 1.3);
+								if (rowRand > 0.5) {
+									const dir = rowRand > 0.75 ? -1 : 1;
+									const shift = (rowRand - 0.5) * 0.9 * intensity;
+									sampleNx = nx + dir * shift;
+									thresholdShift = (rowRand - 0.5) * 0.3;
+									aberration = dir; // RGB split follows the tear direction
+								}
+
+								// Signal dropout: sparse bright or crushed scanlines.
+								const lineRand = hashNoise(y * 4.1, tick);
+								if (lineRand > 0.97) forceHighlight = true;
+								else if (lineRand < 0.03 * intensity) brightnessMul = 0.1;
+							}
+							break;
+						}
+					}
+				}
+
+				// Ambient glitch: corrupt this cell on the current burst rhythm with no
+				// dependence on the pointer. Hotter bursts tear more bands and split wider.
+				if (glitchOn) {
+					sampleNx += glitchJump;
+					sampleNy += glitchRoll;
+
+					const band = Math.floor(y / glitchBandHeight);
+					const bandRand = hashNoise(band * 2.7 + 0.5, glitchTick * 1.3);
+					let tear = glitchBurst * 7; // faint constant shimmer, grows with bursts
+
+					if (bandRand > 1 - glitchBurst) {
+						// Datamosh: this whole row-band slides sideways.
+						const dir = hashNoise(band, glitchTick) > 0.5 ? 1 : -1;
+						const amt =
+							(0.05 + 0.22 * glitchBurst) * (0.4 + 0.6 * hashNoise(band * 3.1, glitchTick));
+						sampleNx += dir * amt;
+						thresholdShift += (hashNoise(band * 1.9, glitchTick) - 0.5) * 0.22;
+						tear += 4 + glitchBurst * 9;
+
+						// Signal dropout: rare blown-out or crushed scanlines inside the tear.
+						const lineRand = hashNoise(y * 4.1, glitchTick);
+						if (lineRand > 0.985) forceHighlight = true;
+						else if (lineRand < 0.02) brightnessMul = 0;
+					}
+
+					splitPx = Math.min(20, Math.round(1 + tear));
+					fringeMix = clamp(0.25 + glitchBurst * 0.85, 0, 1);
+				}
+
+				let mappedX = clamp(sampleNx, 0, 1) * sourceWidth;
+				let mappedY = clamp(sampleNy, 0, 1) * sourceHeight;
 
 				// Slow wavy displacement: offset the sampled pixel along a travelling sine wave.
 				if (waveAmplitude > 0) {
@@ -275,9 +447,9 @@
 				const a = sourceData[srcIdx + 3] || 0;
 				if (a < 10) continue;
 
-				r = clamp((r - 128) * contrast + 128 + brightness * 255, 0, 255);
-				g = clamp((g - 128) * contrast + 128 + brightness * 255, 0, 255);
-				b = clamp((b - 128) * contrast + 128 + brightness * 255, 0, 255);
+				r = clamp((r - 128) * activeContrast + 128 + brightness * 255, 0, 255);
+				g = clamp((g - 128) * activeContrast + 128 + brightness * 255, 0, 255);
+				b = clamp((b - 128) * activeContrast + 128 + brightness * 255, 0, 255);
 
 				const luminance = getLuminance(r, g, b) / 255;
 				const matrixX = Math.floor(x / gridSize) % matrixSize;
@@ -307,10 +479,30 @@
 				}
 
 				ditherThreshold = ditherThreshold * (1 - threshold) + threshold * 0.5;
-				if (pointerMode === 'warp') {
-					ditherThreshold = clamp(ditherThreshold + influence * 0.14, 0, 1);
+				if (thresholdShift !== 0) {
+					ditherThreshold = clamp(ditherThreshold + thresholdShift, 0, 1);
 				}
 				let outputColor: [number, number, number];
+
+				// Chromatic RGB-split: compare the dither decision a few source pixels to
+				// the left and right of this cell. Where they disagree, the cell sits on a
+				// horizontal edge inside the split window, so paint it with one of the two
+				// fringe colours (cool leads, warm trails) for a clean aberration look.
+				let fringeColor: [number, number, number] | null = null;
+				if (
+					fringeMix > 0 &&
+					splitPx >= 1 &&
+					(colorMode === 'duotone' || colorMode === 'grayscale')
+				) {
+					const litCenter = luminance >= ditherThreshold;
+					const litLeft = sampleGlitchLum(srcX - splitPx, srcY) >= ditherThreshold;
+					const litRight = sampleGlitchLum(srcX + splitPx, srcY) >= ditherThreshold;
+					if (litLeft !== litRight) {
+						fringeColor = litRight ? parsedGlitchB : parsedGlitchA;
+					} else if (litLeft !== litCenter) {
+						fringeColor = litCenter ? parsedGlitchB : parsedGlitchA;
+					}
+				}
 
 				switch (colorMode) {
 					case 'grayscale': {
@@ -346,6 +538,45 @@
 							Math.round(adjustedB / (255 / levels)) * (255 / levels)
 						];
 					}
+				}
+
+				if (fringeColor) {
+					outputColor = [
+						Math.round(outputColor[0] * (1 - fringeMix) + fringeColor[0] * fringeMix),
+						Math.round(outputColor[1] * (1 - fringeMix) + fringeColor[1] * fringeMix),
+						Math.round(outputColor[2] * (1 - fringeMix) + fringeColor[2] * fringeMix)
+					];
+				}
+
+				if (forceHighlight) {
+					outputColor =
+						colorMode === 'duotone'
+							? parsedSecondary
+							: colorMode === 'grayscale'
+								? [255, 255, 255]
+								: outputColor;
+				}
+				if (brightnessMul !== 1) {
+					outputColor = [
+						Math.round(outputColor[0] * brightnessMul),
+						Math.round(outputColor[1] * brightnessMul),
+						Math.round(outputColor[2] * brightnessMul)
+					];
+				}
+				if (aberration !== 0) {
+					// Fake chromatic aberration: split the torn cell toward red / cyan.
+					outputColor =
+						aberration > 0
+							? [
+									clamp(outputColor[0] + 90, 0, 255),
+									outputColor[1],
+									clamp(outputColor[2] - 50, 0, 255)
+								]
+							: [
+									clamp(outputColor[0] - 50, 0, 255),
+									outputColor[1],
+									clamp(outputColor[2] + 90, 0, 255)
+								];
 				}
 
 				if (invert) {
@@ -446,14 +677,30 @@
 			return;
 		}
 
+		// Start the one-time contrast entrance on the first successful draw; never reset
+		// it (resizes / theme-color redraws must not replay the reveal).
+		const entranceActive = entranceContrastFrom != null && entranceDuration > 0;
+		if (entranceActive && entranceStart === null) {
+			entranceStart = performance.now();
+		}
+
 		applyDithering(ctx, displayWidth, displayHeight, 0);
 		stopAnimation();
 
-		if (animated) {
+		if (animated || entranceActive) {
 			const tick = () => {
-				time += animationSpeed;
+				if (animated) time += animationSpeed;
+				if (glitchActivation === 'hover') {
+					// Ease toward 1 while hovered, back to 0 on leave — smooth glitch in/out.
+					hoverLevel += ((glitchActive ? 1 : 0) - hoverLevel) * 0.12;
+				}
 				applyDithering(ctx, displayWidth, displayHeight, time);
-				animationFrame = requestAnimationFrame(tick);
+				const entranceDone =
+					!entranceActive ||
+					(entranceStart !== null && performance.now() - entranceStart >= entranceDuration);
+				if (animated || !entranceDone) {
+					animationFrame = requestAnimationFrame(tick);
+				}
 			};
 			animationFrame = requestAnimationFrame(tick);
 		}

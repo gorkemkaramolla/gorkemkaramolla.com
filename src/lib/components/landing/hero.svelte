@@ -2,15 +2,20 @@
 	import DitherShader from '$lib/components/ui/dither-shader.svelte';
 	import { siteConfig } from '$lib/config/site-config';
 	import { landingContent } from '$lib/config/landing-content';
-	import { theme } from '$lib/stores/theme.svelte';
 
 	const { hero } = landingContent;
 
-	// Monochrome portrait that melts into the app background: shadows take the
-	// background colour (so there's no hard silhouette), highlights take the text colour.
-	const isDark = $derived(theme.resolved === 'dark');
-	const portraitShadow = $derived(isDark ? '#1f1f1f' : '#2c001e');
-	const portraitHighlight = $derived(isDark ? '#fafafa' : '#f6ecf4');
+	// Indigo-black crush for shadows, soft lavender-white for highlights —
+	// echoes the electric-violet accent so the duotone and UI palette feel unified.
+	const portraitShadow = '#0c0a16';
+	const portraitHighlight = '#e7e0f4';
+
+	// Ambient glitch RGB-split fringes: electric cyan leads, hot magenta-red trails.
+	const portraitGlitchCool = '#22e1ff';
+	const portraitGlitchWarm = '#ff2e7a';
+
+	// Glitch fires only while the pointer is over the portrait itself; at rest it is calm.
+	let heroHovered = $state(false);
 
 	const socials = [
 		{ label: 'GitHub', href: siteConfig.authorGithub, icon: 'github' },
@@ -19,42 +24,56 @@
 	] as const;
 </script>
 
-<section class="hero-shell relative isolate" aria-label="Intro">
-	<div class="hero-portrait" aria-hidden="true">
+<section class="hero-shell" aria-label="Intro">
+	<!-- Full-bleed atmospheric portrait: anchored to the right, bleeds off the edge,
+	     and melts into the page via a left-edge gradient mask. Glitch fires only while
+	     the pointer is actually over this portrait region — not the text column. -->
+	<div
+		class="hero-backdrop"
+		aria-hidden="true"
+		onpointerenter={() => (heroHovered = true)}
+		onpointerleave={() => (heroHovered = false)}
+	>
 		<DitherShader
 			src="/assets/gorkemkaramolla.jpeg"
-			gridSize={3}
+			gridSize={5}
 			ditherMode="bayer"
 			colorMode="duotone"
 			primaryColor={portraitShadow}
 			secondaryColor={portraitHighlight}
 			contrast={1.18}
-			objectFit="contain"
+			entranceContrastFrom={0}
+			entranceDuration={2500}
+			objectFit="cover"
 			pointerInteractive={false}
 			animated={true}
-			animationSpeed={0.012}
-			waveAmplitude={5}
-			waveFrequency={5}
+			animationSpeed={0.014}
+			ambientGlitch={true}
+			glitchIntensity={1}
+			glitchColorA={portraitGlitchWarm}
+			glitchColorB={portraitGlitchCool}
+			glitchActivation="hover"
+			glitchActive={heroHovered}
+			waveAmplitude={2.5}
+			waveFrequency={1}
 			waveSpeed={1}
 			removeLightBackground={true}
-			lightBackgroundThreshold={218}
-			lightBackgroundChroma={42}
-			className="h-full w-full rounded-none"
+			lightBackgroundThreshold={999}
+			lightBackgroundChroma={99}
+			className="hero-portrait-canvas"
 		/>
 	</div>
+	<div class="hero-scrim" aria-hidden="true"></div>
 
-	<!-- Foreground content -->
-	<div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-		<div
-			class="flex min-h-[78vh] max-w-2xl flex-col justify-center gap-6 py-14 sm:min-h-[86vh] sm:gap-7 sm:py-20"
-		>
+	<div class="hero-foreground relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="hero-content">
 			<!-- Availability chip -->
 			<div
 				class="inline-flex w-fit items-center gap-2.5 rounded-full border border-border/70 px-3.5 py-1.5 text-[0.7rem] font-semibold tracking-[0.18em] text-muted-foreground uppercase backdrop-blur-xl"
 			>
 				<span class="relative flex h-2 w-2">
 					<span
-						class="absolute inline-flex h-full w-full animate-ping rounded-full motion-reduce:hidden"
+						class="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand/50 motion-reduce:hidden"
 					></span>
 					<span class="relative inline-flex h-2 w-2 rounded-full bg-brand"></span>
 				</span>
@@ -86,7 +105,7 @@
 			<div class="flex flex-wrap items-center gap-3">
 				<a
 					href={hero.primaryCta.href}
-					class="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_30px_-10px] shadow-brand/60 transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+					class="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-[#0c0a16] shadow-[0_10px_30px_-10px] shadow-brand/60 transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-brand/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
 				>
 					{hero.primaryCta.label}
 					<svg
@@ -154,28 +173,90 @@
 		position: relative;
 		width: 100vw;
 		margin-inline: calc(50% - 50vw);
-		overflow-x: clip;
+		overflow: clip;
+		isolation: isolate;
 	}
 
-	.hero-portrait {
-		pointer-events: none;
+	/* Full-bleed portrait. Mobile-first: faint, behind the text, shown on the right. */
+	.hero-backdrop {
 		position: absolute;
-		top: clamp(0.5rem, 2vh, 1.75rem);
-		right: clamp(1.5rem, 4vw, 6rem);
-		bottom: 0;
-		z-index: 1;
-		width: min(40vw, 34rem);
-		opacity: 0.96;
+		inset: 0;
+		z-index: 0;
+		/* Receives hover so the glitch only fires over the portrait, not the text column.
+		   The text/CTA column sits at z-10 and intercepts pointer events on the left. */
+		pointer-events: auto;
+		opacity: 0.5;
+		-webkit-mask-image: linear-gradient(95deg, transparent 0%, rgba(0, 0, 0, 0.3) 38%, #000 72%);
+		mask-image: linear-gradient(95deg, transparent 0%, rgba(0, 0, 0, 0.3) 38%, #000 72%);
 	}
 
-	@media (max-width: 767px) {
-		.hero-portrait {
-			top: 0;
-			right: -1rem;
-			bottom: 0;
-			width: min(68vw, 19rem);
-			height: 100%;
-			opacity: 0.32;
+	.hero-backdrop :global(.hero-portrait-canvas) {
+		height: 100%;
+		width: 100%;
+		border-radius: 0;
+	}
+
+	/* Readability scrim: weight the page colour under the text (left + bottom). */
+	.hero-scrim {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+		background:
+			linear-gradient(
+				90deg,
+				hsl(var(--background)) 0%,
+				hsl(var(--background) / 0.78) 30%,
+				transparent 70%
+			),
+			linear-gradient(0deg, hsl(var(--background) / 0.65) 0%, transparent 38%);
+	}
+
+	/* Let pointer events fall through the foreground wrapper to the portrait backdrop,
+	   so the glitch triggers over the photo. The content itself re-enables them so the
+	   text, CTAs and social links stay fully interactive. */
+	.hero-foreground {
+		pointer-events: none;
+	}
+
+	.hero-content {
+		pointer-events: auto;
+		position: relative;
+		display: flex;
+		min-height: 84vh;
+		max-width: 40rem;
+		flex-direction: column;
+		justify-content: center;
+		gap: 1.5rem;
+		padding-block: clamp(4rem, 10vh, 7rem);
+	}
+
+	@media (min-width: 640px) {
+		.hero-content {
+			gap: 1.75rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.hero-backdrop {
+			inset: 0 0 0 auto;
+			width: min(60%, 62rem);
+			opacity: 0.95;
+			-webkit-mask-image: linear-gradient(90deg, transparent 2%, rgba(0, 0, 0, 0.5) 26%, #000 52%);
+			mask-image: linear-gradient(90deg, transparent 2%, rgba(0, 0, 0, 0.5) 26%, #000 52%);
+		}
+
+		.hero-scrim {
+			background: linear-gradient(
+				90deg,
+				hsl(var(--background)) 0%,
+				hsl(var(--background) / 0.5) 30%,
+				transparent 58%
+			);
+		}
+
+		.hero-content {
+			min-height: 88vh;
 		}
 	}
 </style>

@@ -67,13 +67,11 @@ export type LandingContent = {
 	about: {
 		eyebrow: string;
 		title: string;
-		description: string;
 		focusAreas: FocusArea[];
 	};
 	background: {
 		eyebrow: string;
 		title: string;
-		description: string;
 		experienceLabel: string;
 		educationLabel: string;
 		experience: TimelineItem[];
@@ -82,7 +80,6 @@ export type LandingContent = {
 	techStack: {
 		eyebrow: string;
 		title: string;
-		description: string;
 		groups: TechGroup[];
 	};
 	projects: {
@@ -107,7 +104,7 @@ export const landingContent: LandingContent = {
 	hero: {
 		eyebrow: 'Görkem Karamolla',
 		availability: 'Available for work',
-		location: 'Istanbul, TR · Remote-friendly',
+		location: 'Istanbul, TR',
 		headlineLead: 'I build fast, thoughtful',
 		headlineAccent: 'web applications',
 		headlineTail: 'people actually enjoy using.',
@@ -120,8 +117,6 @@ export const landingContent: LandingContent = {
 	about: {
 		eyebrow: 'What I do',
 		title: 'A developer who sweats both the system and the surface.',
-		description:
-			'I like problems that span the whole stack — designing the data model, the API, and the interface that sits on top, then making the whole thing feel fast and inevitable.',
 		focusAreas: [
 			{
 				icon: 'interface',
@@ -147,46 +142,50 @@ export const landingContent: LandingContent = {
 	background: {
 		eyebrow: 'Background',
 		title: 'Experience & education.',
-		description: 'A short history — swap in your real roles, companies, schools, and dates.',
 		experienceLabel: 'Experience',
 		educationLabel: 'Education',
 		experience: [
 			{
-				title: 'Senior Software Developer',
-				subtitle: 'Independent / Freelance',
-				period: '2022 — Present',
+				title: 'Software Specialist',
+				subtitle: 'Torunlar / TorunAVM',
+				period: 'Dec 2024 - Present',
 				summary:
 					'Designing and shipping full-stack products for startups and small teams, from first commit to production.'
 			},
 			{
-				title: 'Full-Stack Developer',
-				subtitle: 'Placeholder Company',
-				period: '2020 — 2022',
+				title: 'Software Engineer',
+				subtitle: 'Istanbul Chamber of Industry',
+				period: 'Jun 2024 — Sep 2024',
 				summary:
-					'Owned key features across the web app and API, improved performance, and mentored junior engineers.'
+					'After my internship, I continued working with the Istanbul Chamber of Industry to complete our project. I developed a Docker-based environment for scalable Python microservices and created a full-stack application using ElectronJS and Next.js. The project featured an AI-driven speech-to-text editor and facial recognition integrated with multiple IP cameras in the building. After the seven-month project, we provided detailed documentation and handed it over to their development team.'
 			},
 			{
-				title: 'Frontend Developer',
-				subtitle: 'Placeholder Studio',
-				period: '2019 — 2020',
+				title: 'Software Engineer Intern',
+				subtitle: 'Istanbul Chamber of Industry',
+				period: 'Mar 2024 - Jun 2024',
+				summary: 'Mandatory Internship'
+			},
+			{
+				title: 'Software Developer',
+				subtitle: 'Istanbul Nisantasi University',
+				period: 'Jul 2023 - Feb 2024',
 				summary:
-					'Built marketing sites and dashboards with a strong focus on accessibility and design fidelity.'
+					'Developed a system for Kep Online Courses that allows students to check if they have failed a course and list their failed courses using their University credentials. The system also shows the remaining courses they need to complete. It is currently in use on the Istanbul Nisantasi University.'
 			}
 		],
 		education: [
 			{
-				title: 'B.Sc. Computer Engineering',
-				subtitle: 'Placeholder University',
-				period: '2015 — 2019',
+				title: 'B.Sc. Software Engineering(Eng)',
+				subtitle: 'Istanbul Nisantasi University',
+				period: 'SEP 2023 — JUN 2024',
 				summary:
 					'Studied software engineering, algorithms, databases, and web systems. Graduated with honors.'
 			},
 			{
-				title: 'Continuous learning',
-				subtitle: 'Online courses & certifications',
-				period: 'Ongoing',
-				summary:
-					'Self-directed study in cloud infrastructure, systems design, and modern frontend architecture.'
+				title: 'Univerza v Mariboru / Maribor University',
+				subtitle: 'Organizational Sciences',
+				period: 'FEB 2023 - JUL 2023',
+				summary: 'Easmus education'
 			}
 		]
 	},
@@ -194,7 +193,6 @@ export const landingContent: LandingContent = {
 	techStack: {
 		eyebrow: 'Toolbox',
 		title: 'Tools I reach for.',
-		description: 'A working set, not a buzzword list — these are the things I use most weeks.',
 		groups: [
 			{
 				label: 'Languages',

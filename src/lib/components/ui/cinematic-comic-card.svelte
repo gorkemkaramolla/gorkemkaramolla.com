@@ -1,5 +1,4 @@
 <script lang="ts">
-	import DitherShader from '$lib/components/ui/dither-shader.svelte';
 	import { cn } from '$lib/utils';
 	import { getNextSceneIndex, getSceneDurationMs } from './cinematic-comic-card.logic';
 
@@ -250,11 +249,11 @@
 	<div class="relative h-full w-full overflow-hidden" style={panelParallaxStyle(depth)}>
 		{#if panel.type === 'content'}
 			<div
-				class="relative h-full w-full border border-black/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,247,251,0.98))] dark:border-white/10 dark:bg-[#050608]"
+				class="relative h-full w-full border border-black/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,247,251,0.98))] border-white/10 bg-[#050608]"
 			>
 				<div
 					aria-hidden="true"
-					class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.14),transparent_44%),linear-gradient(180deg,rgba(15,23,42,0.03),transparent_32%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.16),transparent_44%),linear-gradient(180deg,rgba(255,255,255,0.05),transparent_32%)]"
+					class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.14),transparent_44%),linear-gradient(180deg,rgba(15,23,42,0.03),transparent_32%)] bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.16),transparent_44%),linear-gradient(180deg,rgba(255,255,255,0.05),transparent_32%)]"
 				></div>
 				<div
 					aria-hidden="true"
@@ -270,12 +269,12 @@
 							</p>
 						{/if}
 						<h3
-							class="max-w-[14ch] text-2xl font-semibold tracking-[-0.05em] text-foreground dark:text-white"
+							class="max-w-[14ch] text-2xl font-semibold tracking-[-0.05em] text-white"
 						>
 							{panel.title}
 						</h3>
 						{#if panel.description}
-							<p class="max-w-[30ch] text-sm leading-6 text-muted-foreground dark:text-white/65">
+							<p class="max-w-[30ch] text-sm leading-6 text-white/65">
 								{panel.description}
 							</p>
 						{/if}
@@ -285,21 +284,21 @@
 						{#if panel.items && panel.items.length > 0}
 							{#each panel.items as item, itemIndex (item.label)}
 								<div
-									class="rounded-2xl border border-border/70 bg-background/70 px-4 py-3 dark:border-white/10 dark:bg-white/[0.03]"
+									class="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3"
 								>
 									<div class="flex items-start gap-3">
 										<span
-											class="mt-1 text-[0.66rem] font-semibold tracking-[0.2em] text-muted-foreground/70 uppercase dark:text-white/35"
+											class="mt-1 text-[0.66rem] font-semibold tracking-[0.2em] text-white/35 uppercase"
 										>
 											0{itemIndex + 1}
 										</span>
 										<div class="space-y-1">
-											<p class="text-sm leading-6 font-medium text-foreground dark:text-white/92">
+											<p class="text-sm leading-6 font-medium text-white/92">
 												{item.label}
 											</p>
 											{#if item.meta}
 												<p
-													class="text-[0.68rem] tracking-[0.18em] text-muted-foreground/80 uppercase dark:text-white/45"
+													class="text-[0.68rem] tracking-[0.18em] text-white/45 uppercase"
 												>
 													{item.meta}
 												</p>
@@ -309,7 +308,7 @@
 								</div>
 							{/each}
 						{:else}
-							<p class="text-sm leading-6 text-muted-foreground dark:text-white/58">
+							<p class="text-sm leading-6 text-white/58">
 								New field notes are being prepared.
 							</p>
 						{/if}
@@ -317,7 +316,7 @@
 
 					{#if panel.footer}
 						<p
-							class="text-[0.72rem] tracking-[0.18em] text-muted-foreground/80 uppercase dark:text-white/42"
+							class="text-[0.72rem] tracking-[0.18em] text-white/42 uppercase"
 						>
 							{panel.footer}
 						</p>
@@ -326,18 +325,11 @@
 			</div>
 		{:else}
 			<div class={cn('h-full w-full', getKenBurnsClass(panelIdx))}>
-				<DitherShader
+				<img
 					src={panel.src}
-					pointerInteractive={true}
-					pointerMode="pan"
-					gridSize={1}
-					colorMode="duotone"
-					primaryColor="#161a1e"
-					secondaryColor="#d2d7dd"
-					contrast={1.12}
-					brightness={-0.03}
-					threshold={0.5}
-					className="rounded-none"
+					alt={panel.alt ?? ''}
+					loading="lazy"
+					class="h-full w-full object-cover"
 				/>
 			</div>
 		{/if}
@@ -358,7 +350,7 @@
 <div
 	bind:this={rootEl}
 	class={cn(
-		'relative w-full overflow-hidden rounded-xl border border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,247,251,0.98))] text-foreground shadow-[0_20px_50px_rgba(148,163,184,0.22)] dark:border-white/10 dark:bg-black dark:text-white dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)]',
+		'relative w-full overflow-hidden rounded-xl border border-white/10 bg-black text-white shadow-[0_20px_50px_rgba(0,0,0,0.7)]',
 		className
 	)}
 	role="region"
@@ -370,7 +362,7 @@
 	onmouseleave={() => (isPaused = false)}
 >
 	<div
-		class={cn('relative w-full overflow-hidden bg-background/80 dark:bg-black', panelHeightClass)}
+		class={cn('relative w-full overflow-hidden bg-black', panelHeightClass)}
 		role="group"
 		aria-label={currentScene?.ariaLabel ?? 'Cinematic scene canvas'}
 		onmousemove={handleParallaxMove}
@@ -378,14 +370,14 @@
 	>
 		{#if currentPanels.length === 0}
 			<div
-				class="flex h-full items-center justify-center border border-dashed border-border/70 bg-background/75 p-6 text-sm tracking-[0.18em] text-muted-foreground uppercase dark:border-white/10 dark:bg-black/80 dark:text-white/40"
+				class="flex h-full items-center justify-center border border-dashed border-white/10 bg-black/80 p-6 text-sm tracking-[0.18em] text-white/40 uppercase"
 			>
 				Scene unavailable
 			</div>
 		{:else if currentScene?.type === 'collage'}
 			{#if currentPanels.length >= 3}
 				<div
-					class="grid h-full w-full grid-cols-2 grid-rows-[1.2fr_1fr] gap-2 bg-background/75 p-2 dark:bg-black"
+					class="grid h-full w-full grid-cols-2 grid-rows-[1.2fr_1fr] gap-2 bg-black p-2"
 				>
 					<div
 						class={cn(
@@ -419,7 +411,7 @@
 					</div>
 				</div>
 			{:else if currentPanels.length === 2}
-				<div class="grid h-full w-full grid-cols-2 gap-2 bg-background/75 p-2 dark:bg-black">
+				<div class="grid h-full w-full grid-cols-2 gap-2 bg-black p-2">
 					<div
 						class={cn(
 							'overflow-hidden transition-all duration-1000 ease-out',
@@ -442,7 +434,7 @@
 					</div>
 				</div>
 			{:else}
-				<div class="h-full w-full bg-background/75 p-2 dark:bg-black">
+				<div class="h-full w-full bg-black p-2">
 					<div
 						class={cn(
 							'h-full w-full overflow-hidden transition-all duration-1000 ease-out',
@@ -456,7 +448,7 @@
 				</div>
 			{/if}
 		{:else}
-			<div class="h-full w-full bg-background/75 p-2 dark:bg-black">
+			<div class="h-full w-full bg-black p-2">
 				<div
 					class={cn(
 						'h-full w-full overflow-hidden transition-all duration-1000 ease-out',
@@ -470,7 +462,7 @@
 
 		<!-- Vignette -->
 		<div
-			class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_50%,rgba(15,23,42,0.12)_100%)] dark:bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.65)_100%)]"
+			class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.65)_100%)]"
 		></div>
 
 		<!-- Rain -->
@@ -482,7 +474,7 @@
 
 	{#if showControls}
 		<div
-			class="flex items-center justify-between border-t border-border/70 bg-background/75 px-3 py-2 text-xs tracking-[0.2em] text-muted-foreground uppercase dark:border-white/10 dark:bg-black/80 dark:text-white/50"
+			class="flex items-center justify-between border-t border-white/10 bg-black/80 px-3 py-2 text-xs tracking-[0.2em] text-white/50 uppercase"
 		>
 			<span>{currentIndex + 1} / {sceneCount}</span>
 		</div>

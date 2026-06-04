@@ -2,68 +2,38 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
-/* 1. Define HSL variables for Light and Dark modes */
+/* Synthwave noir: indigo-black base + electric violet accent.
+   Violet sits between the portrait's cyan & magenta glitch fringe — harmonizes with both. */
 @layer base {
 	:root {
-		/* Classic Ubuntu aubergine theme (light toggle) */
-		--background: 319 100% 9%; /* Dark Aubergine #2C001E */
-		--foreground: 30 15% 96%;
+		--background: 260 22% 7%;
+		--foreground: 258 18% 95%;
 
-		--primary: 30 15% 96%;
-		--primary-foreground: 319 60% 10%;
+		--primary: 258 18% 95%;
+		--primary-foreground: 260 22% 7%;
 
-		--secondary: 315 36% 16%;
-		--secondary-foreground: 30 15% 96%;
+		--secondary: 260 18% 12%;
+		--secondary-foreground: 258 18% 95%;
 
-		--muted: 315 36% 16%;
-		--muted-foreground: 312 12% 72%;
+		--muted: 260 18% 12%;
+		--muted-foreground: 258 10% 62%;
 
-		--accent: 315 36% 16%;
-		--accent-foreground: 30 15% 96%;
+		--accent: 260 18% 12%;
+		--accent-foreground: 258 18% 95%;
 
-		--destructive: 0 62.8% 50%;
-		--destructive-foreground: 30 15% 96%;
+		--destructive: 350 70% 55%;
+		--destructive-foreground: 0 0% 98%;
 
-		--border: 315 32% 22%;
-		--input: 315 32% 22%;
-		--ring: 306 50% 58%;
+		--border: 260 14% 20%;
+		--input: 260 14% 20%;
+		--ring: 260 95% 70%;
 
 		--radius: 0.5rem;
 
-		/* Brightened aubergine accent, legible on the deep aubergine canvas */
-		--color-brand: #a83d9c;
-		--color-brand-strong: #77216f;
-		--color-brand-soft: #c98fc2;
-	}
-
-	.dark {
-		/* Ubuntu 24.04 "Adwaita-dark": neutral charcoal + orange accent */
-		--background: 0 0% 12%;
-		--foreground: 0 0% 98%;
-
-		--primary: 0 0% 98%;
-		--primary-foreground: 0 0% 12%;
-
-		--secondary: 0 0% 18%;
-		--secondary-foreground: 0 0% 98%;
-
-		--muted: 0 0% 18%;
-		--muted-foreground: 0 0% 66%;
-
-		--accent: 0 0% 18%;
-		--accent-foreground: 0 0% 98%;
-
-		--destructive: 0 62.8% 50%;
-		--destructive-foreground: 0 0% 98%;
-
-		--border: 0 0% 24%;
-		--input: 0 0% 24%;
-		--ring: 22 90% 55%;
-
-		/* Ubuntu Orange accent for the black Ubuntu dark theme */
-		--color-brand: #e95420;
-		--color-brand-strong: #c7400f;
-		--color-brand-soft: #f47a52;
+		/* Electric violet accent — bridges cyan & magenta glitch fringe */
+		--color-brand: #a87bff;
+		--color-brand-strong: #8a4fff;
+		--color-brand-soft: #c4a6ff;
 	}
 }
 
@@ -91,12 +61,10 @@
 	--color-input: hsl(var(--input));
 	--color-ring: hsl(var(--ring));
 
-	/* Brand accent — official Ubuntu aubergine family */
-	--color-brand: #77216f; /* Light Aubergine — primary accent (fills / light-mode text) */
-	--color-brand-strong: #5e2750; /* Mid Aubergine — hover / pressed, text on light */
-	--color-brand-soft: #a83d9c; /* brightened aubergine — readable accent on dark */
-	--color-aubergine: #2c001e; /* Dark Aubergine — deep backdrop */
-	--color-aubergine-mid: #5e2750; /* Mid Aubergine — secondary glow */
+	/* Brand accent — Electric violet */
+	--color-brand: #a87bff;
+	--color-brand-strong: #8a4fff;
+	--color-brand-soft: #c4a6ff;
 
 	/* Chat widget blue (was #1f5eff family) */
 	--color-chat: #1f5eff; /* primary chat blue */
