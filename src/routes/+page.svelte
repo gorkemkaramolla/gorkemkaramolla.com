@@ -6,6 +6,7 @@
 	import TechStack from '$lib/components/landing/tech-stack.svelte';
 	import SelectedProjects from '$lib/components/landing/selected-projects.svelte';
 	import ContactCta from '$lib/components/landing/contact-cta.svelte';
+	import SectionNav from '$lib/components/landing/section-nav.svelte';
 	import SectionHeading from '$lib/components/landing/section-heading.svelte';
 	import BlogPanelCard from '$lib/components/ui/blog-panel-card.svelte';
 	import Card from '$lib/components/ui/card.svelte';
@@ -74,3 +75,15 @@
 		<ContactCta />
 	</Reveal>
 </div>
+
+<SectionNav
+	sections={[
+		{ id: 'intro', label: 'Intro' },
+		{ id: 'about', label: 'About' },
+		{ id: 'background', label: 'Background' },
+		{ id: 'stack', label: 'Stack' },
+		{ id: 'work', label: 'Work' },
+		{ id: 'writing', label: 'Blog' },
+		{ id: 'contact', label: 'Contact' }
+	]}
+/>

@@ -44,7 +44,7 @@
 			secondaryColor={portraitHighlight}
 			contrast={1.18}
 			entranceContrastFrom={0}
-			entranceDuration={2500}
+			entranceDuration={9999}
 			objectFit="cover"
 			pointerInteractive={false}
 			animated={true}
@@ -240,7 +240,7 @@
 		display: flex;
 		/* Fill the viewport below the sticky nav, on every screen size.
 		   `--nav-height` is published live by the nav; 4rem is a safe fallback. */
-		min-height: calc(100svh - var(--nav-height, 0px));
+		min-height: calc(100svh - var(--nav-height, 4rem));
 		max-width: 40rem;
 		flex-direction: column;
 		justify-content: center;
@@ -273,7 +273,7 @@
 		}
 
 		.hero-content {
-			min-height: calc(100svh - var(--nav-height, 0px));
+			min-height: calc(100svh - var(--nav-height, 4rem));
 		}
 	}
 </style>

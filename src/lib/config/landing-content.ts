@@ -98,6 +98,8 @@ export type LandingContent = {
 		eyebrow: string;
 		title: string;
 		description: string;
+		/** Small fact grid shown beside the contact links (Based in, Timezone, …). */
+		meta: { label: string; value: string }[];
 	};
 };
 
@@ -110,9 +112,9 @@ export const landingContent: LandingContent = {
 			'Software Specialist @ Torunlar',
 			'Svelte · Node · PostgreSQL · Go'
 		],
-		headlineLead: 'I build fast, thoughtful',
-		headlineAccent: 'web applications',
-		headlineTail: 'people actually enjoy using.',
+		headlineLead: 'I build',
+		headlineAccent: 'web apps',
+		headlineTail: 'people love to use.',
 		subhead:
 			'Full-stack software developer based in İstanbul, building products end to end — from PostgreSQL schemas and typed APIs to fast, accessible interfaces. I care about clean code, dependable systems, and shipping work that feels effortless to use.',
 		primaryCta: { label: 'View selected work', href: '#work' },
@@ -277,9 +279,15 @@ export const landingContent: LandingContent = {
 	},
 
 	contact: {
-		eyebrow: 'Contact',
-		title: 'Let’s build something together.',
+		eyebrow: 'Say hello',
+		title: 'My inbox is always open.',
 		description:
-			'I’m currently open to new roles and select freelance work. The fastest way to reach me is email — I usually reply within a day.'
+			'Open to roles, collaborations, and conversations. The easiest way to reach me is email — I read everything.',
+		meta: [
+			{ label: 'Based in', value: 'İstanbul, TR' },
+			{ label: 'Timezone', value: 'GMT +3' },
+			{ label: 'Status', value: 'Available' },
+			{ label: 'Work mode', value: 'Remote / Hybrid' }
+		]
 	}
 };
