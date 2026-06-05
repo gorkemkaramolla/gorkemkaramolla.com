@@ -5,7 +5,7 @@
 	const { about } = landingContent;
 </script>
 
-<section aria-labelledby="about-title" class="space-y-10">
+<section id="about" aria-labelledby="about-title" class="scroll-mt-24 space-y-10">
 	<SectionHeading
 		id="about-title"
 		eyebrow={about.eyebrow}

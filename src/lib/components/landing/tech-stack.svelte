@@ -5,7 +5,7 @@
 	const { techStack } = landingContent;
 </script>
 
-<section aria-labelledby="stack-title" class="space-y-10">
+<section id="stack" aria-labelledby="stack-title" class="scroll-mt-24 space-y-10">
 	<SectionHeading
 		id="stack-title"
 		eyebrow={techStack.eyebrow}

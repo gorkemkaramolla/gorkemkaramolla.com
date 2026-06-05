@@ -1,52 +1,56 @@
 <script lang="ts">
-	import BlogPanelCard from '$lib/components/ui/blog-panel-card.svelte';
+	import BlogListRow from '$lib/components/ui/blog-list-row.svelte';
 	import Card from '$lib/components/ui/card.svelte';
 	import { siteConfig } from '$lib/config/site-config';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+
+	const postCount = data.posts.length;
 </script>
 
 <svelte:head>
 	<title>Blog | {siteConfig.name}</title>
 	<meta
 		name="description"
-		content="A temporary archive of published notes on software, interfaces, and deliberate systems."
+		content="Notes on software, interfaces, and deliberate systems — written while building."
 	/>
 </svelte:head>
 
-<div class="mx-auto flex w-full max-w-[86rem] flex-col gap-10 pt-4 pb-16 md:gap-14">
-	<section class="grid gap-6">
-		<div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-			<div class="space-y-2">
-				<h2 class="text-3xl font-semibold tracking-[-0.05em] text-foreground sm:text-4xl">
-					Every published post under `/blog`.
-				</h2>
-			</div>
-		</div>
-
-		{#if data.posts.length > 0}
-			<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-				{#each data.posts as post, index (post.slug)}
-					<BlogPanelCard {post} {index} />
-				{/each}
-			</div>
-		{:else}
-			<Card
-				className="rounded-[1.5rem] border-border/70 bg-background/45 p-8 text-muted-foreground backdrop-blur-xl"
-			>
-				No published posts are available yet.
-			</Card>
+<div class="mx-auto flex w-full max-w-4xl flex-col gap-10 pt-6 pb-20 md:gap-12">
+	<header class="space-y-4">
+		<p class="flex items-center gap-2 font-mono text-xs tracking-[0.2em] text-brand uppercase">
+			<span aria-hidden="true">$</span>
+			ls ~/blog
+		</p>
+		<h1 class="text-3xl font-semibold tracking-[-0.05em] text-balance text-foreground sm:text-4xl">
+			Blog
+		</h1>
+		<p class="max-w-2xl text-base leading-7 text-pretty text-muted-foreground">
+			Notes on software, interfaces, and the craft of shipping — written as I build.
+		</p>
+		{#if postCount > 0}
+			<p class="font-mono text-xs text-muted-foreground/70">
+				{postCount}
+				{postCount === 1 ? 'post' : 'posts'}
+			</p>
 		{/if}
-	</section>
-</div>
+	</header>
 
-<style>
-	:global(.blog-index-shell) {
-		border-color: rgb(255 255 255 / 0.1);
-		background:
-			radial-gradient(circle at top right, color-mix(in srgb, var(--color-brand) 12%, transparent), transparent 42%),
-			linear-gradient(180deg, rgb(10 12 20 / 0.84), rgb(4 5 10 / 0.94));
-		box-shadow: 0 24px 80px rgb(0 0 0 / 0.28);
-	}
-</style>
+	{#if postCount > 0}
+		<section
+			class="flex flex-col [&>*:last-child]:border-b [&>*:last-child]:border-border/40"
+			aria-label="All posts"
+		>
+			{#each data.posts as post, index (post.slug)}
+				<BlogListRow {post} {index} />
+			{/each}
+		</section>
+	{:else}
+		<Card
+			className="rounded-2xl border-dashed border-border/70 bg-background/40 p-10 text-center font-mono text-sm text-muted-foreground backdrop-blur-xl"
+		>
+			<span class="text-brand">$</span> No posts published yet — check back soon.
+		</Card>
+	{/if}
+</div>

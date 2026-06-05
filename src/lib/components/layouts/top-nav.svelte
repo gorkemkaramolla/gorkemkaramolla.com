@@ -1,9 +1,24 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { siteConfig } from '$lib/config/site-config';
+
+	let navEl = $state<HTMLElement | null>(null);
+
+	// Publish the live nav height so full-viewport sections (the hero) can size
+	// themselves as `100svh - var(--nav-height)` across every breakpoint.
+	$effect(() => {
+		if (!navEl) return;
+		const setHeight = () =>
+			document.documentElement.style.setProperty('--nav-height', `${navEl!.offsetHeight}px`);
+		setHeight();
+		const observer = new ResizeObserver(setHeight);
+		observer.observe(navEl);
+		return () => observer.disconnect();
+	});
 </script>
 
 <nav
+	bind:this={navEl}
 	class="sticky top-0 left-0 z-50 border-b border-border/60 bg-background/72 backdrop-blur-xl supports-backdrop-filter:bg-background/55"
 >
 	<div

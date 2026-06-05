@@ -6,7 +6,7 @@
 	const { background } = landingContent;
 </script>
 
-<section aria-labelledby="background-title" class="space-y-10">
+<section id="background" aria-labelledby="background-title" class="scroll-mt-24 space-y-10">
 	<SectionHeading
 		id="background-title"
 		eyebrow={background.eyebrow}

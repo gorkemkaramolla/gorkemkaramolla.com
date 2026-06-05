@@ -54,8 +54,9 @@ export type TimelineItem = {
 export type LandingContent = {
 	hero: {
 		eyebrow: string;
-		availability: string;
 		location: string;
+		/** Cycled, one at a time, by the command-line typewriter under the headline. */
+		roles: string[];
 		headlineLead: string;
 		/** Rendered in the brand accent color. */
 		headlineAccent: string;
@@ -103,13 +104,17 @@ export type LandingContent = {
 export const landingContent: LandingContent = {
 	hero: {
 		eyebrow: 'Görkem Karamolla',
-		availability: 'Available for work',
-		location: 'Istanbul, TR',
+		location: 'İstanbul, Türkiye',
+		roles: [
+			'Full-stack Software Developer',
+			'Software Specialist @ Torunlar',
+			'Svelte · Node · PostgreSQL · Go'
+		],
 		headlineLead: 'I build fast, thoughtful',
 		headlineAccent: 'web applications',
 		headlineTail: 'people actually enjoy using.',
 		subhead:
-			'Full-stack software developer focused on clean interfaces and dependable systems — from database to the pixels you touch. Currently open to frontend, full-stack, and product engineering roles.',
+			'Full-stack software developer based in İstanbul, building products end to end — from PostgreSQL schemas and typed APIs to fast, accessible interfaces. I care about clean code, dependable systems, and shipping work that feels effortless to use.',
 		primaryCta: { label: 'View selected work', href: '#work' },
 		secondaryCta: { label: 'Get in touch', href: '#contact' }
 	},
@@ -266,7 +271,7 @@ export const landingContent: LandingContent = {
 	},
 
 	writing: {
-		eyebrow: 'Writing',
+		eyebrow: 'Blog',
 		title: 'Notes on building software.',
 		description: 'Occasional essays on interfaces, systems, and the craft of shipping.'
 	},
